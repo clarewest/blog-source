@@ -2,7 +2,7 @@
 title: Not-proteins in Parliament
 author: CE West
 date: '2019-06-11'
-slug: 2019-06-11-not-proteins-in-parliament
+slug: not-proteins-in-parliament
 categories:
   - personal
 tags:

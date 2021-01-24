@@ -1,19 +1,19 @@
 ---
 title: 'Making Tables Shiny: DT, formattable, and reactable'
-author: CE West
+author: "CE West"
 date: '2020-09-09'
-slug: making-tables-shiny
-categories:
-  - R
-tags:
-  - shiny
-  - DT
-  - formattable
-  - reactable
-  - tables
-  - packages
+description: Demo of popular packages for generating interactive tables suitable for
+  Shiny apps
 meta_img: images/image.png
-description: Demo of popular packages for generating interactive tables suitable for Shiny apps
+slug: making-tables-shiny
+tags:
+- shiny
+- DT
+- formattable
+- reactable
+- tables
+- packages
+categories: R
 ---
 
 
@@ -67,6 +67,7 @@ villagers <-
 [`DT`](https://rstudio.github.io/DT/) is an interface to the JavaScript library [DataTables](https://datatables.net/). It allows you to display R dataframes (or matrices) as interactive tables in HTML pages, such as in a Shiny app. 
 
 The most basic way to use it is the function `datatable(df)`:
+
 
 
 ```{r}

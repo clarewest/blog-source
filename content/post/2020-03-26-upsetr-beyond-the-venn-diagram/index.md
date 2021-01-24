@@ -6,9 +6,9 @@ slug: []
 categories:
   - R
   - plotting
-  - packages
 tags:
   - upsetr
+  - packages
 meta_img: images/image.png
 description: Description for the page
 ---

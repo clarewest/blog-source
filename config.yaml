@@ -1,4 +1,4 @@
-baseurl: https://example.com
+baseurl: https://clarewest.github.io/blog-hugo
 title: Clare's Blog
 author: CE West
 canonifyurls: yes
@@ -8,6 +8,8 @@ enableEmoji: yes
 hasCJKLanguage: no
 pygmentsstyle: vs
 pygmentscodefences: yes
+permalinks:
+  posts: :slug
 ignoreFiles:
   - \.Rmd$
   - \.Rmarkdown$

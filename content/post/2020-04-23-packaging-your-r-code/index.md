@@ -7,6 +7,9 @@ categories:
   - R
 tags:
   - packages
+  - usethis
+  - testthat
+  - roxygen2
 meta_img: images/image.png
 description: An overview of how usethis can help you create, develop, document and test R packages and projects
 ---

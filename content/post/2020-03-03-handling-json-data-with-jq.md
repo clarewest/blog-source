@@ -2,7 +2,7 @@
 title: Handling JSON data with jq
 author: CE West
 date: '2020-03-03'
-slug: 2020-03-03-handling-json-data-with-jq
+slug: handling-json-data-with-jq
 categories:
   - commandline
 tags: 
