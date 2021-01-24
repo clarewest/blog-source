@@ -22,17 +22,6 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(shiny)
 ```
 
-```{css, echo = FALSE}
-h1, .h1, h2, .h2, h3, .h3 {
-    margin-top: 40px;
-}
-
-h4, .h4, h5, .h5 {
-    margin-top: 40px;
-}
-
-```
-
 In this blog post I demonstrate the basics of each package, with some formatting examples. All three are nice, but I have a preference for DT because it's quick and highly customisable. I include some extra DT examples including how to include icons, images, tooltips, heatmap-style column fills, abbreviated column output, and how to make very simple tables.
 
 <!--more-->
@@ -44,6 +33,17 @@ Tables! Underappreciated data analysis heroes.
 I auditioned three packages for making nice tables in Shiny apps: `DT`, `formattable` and `reactable`.
 
 The data I'll use today is the Animal Crossing dataset from [VillagerDB](https://github.com/jefflomacy/villagerdb) via [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-05/readme.md). 
+
+```{css, echo = FALSE}
+h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 40px;
+}
+
+h4, .h4, h5, .h5 {
+    margin-top: 40px;
+}
+
+```
 
 ```{r}
 library(dplyr)
@@ -147,6 +147,7 @@ ui <- fluidPage(titlePanel("DT table in Shiny"),
 
 server <- function(input, output) {
   output$mytable <- DT::renderDataTable(villagers,
+                                        options = list(scrollX = TRUE),
                                         rownames = FALSE)
 }
 
@@ -184,6 +185,7 @@ icon_villagers <- villagers %>%
                          as.character(icon("venus", lib = "font-awesome")),
                          as.character(icon("mars", lib = "font-awesome"))))
 datatable(icon_villagers[,1:8],
+          options = list(scrollX = TRUE),
           escape = FALSE)
 
 ```
@@ -211,6 +213,7 @@ pic_villagers <- villagers %>%
   unique()
 
 datatable(pic_villagers,
+          options = list(scrollX = TRUE),
           escape = FALSE,
           rownames = FALSE)
 ```
@@ -279,6 +282,7 @@ formattable(
   )
 ) %>%
   as.datatable(escape = FALSE,
+               options = list(scrollX = TRUE),
                rownames = FALSE)
 ```
 
@@ -287,7 +291,7 @@ formattable(
 Next I tried [`reactable`](https://glin.github.io/reactable/), a package based on the [React Table](https://github.com/tannerlinsley/react-table) library. 
 
 
-```{r}
+```{r, eval = FALSE}
 library(reactable)
 reactable(items[, 2:7],
           columns = list(
@@ -296,6 +300,8 @@ reactable(items[, 2:7],
                                 format = colFormat(suffix = " Bells"))
           ))
 ```
+
+<img src="images/reactable_example.png" alt="reactable example" width="100%"/>
 
 <br> 
 
@@ -329,7 +335,8 @@ Then we apply the `formatStyle()` function to the output of `datatable()` to set
 
 ```{r}
 datatable(pic_items,
-          options = list(order = list(list(5, 'desc'))),
+          options = list(scrollX = TRUE,
+                         order = list(list(5, 'desc'))),
           escape = FALSE,
           rownames = FALSE) %>%
       formatStyle(c("sell_value", "buy_value"), backgroundColor = styleInterval(brks, clrs))
@@ -346,7 +353,8 @@ To do this, you can use JavaScript to format the column to show a substring with
 ```{r}
 
 datatable(pic_items,
-          options = list(columnDefs = list(
+          options = list(scrollX = TRUE,
+                         columnDefs = list(
                                        list(
                                          targets = 1,
                                          render = JS(
