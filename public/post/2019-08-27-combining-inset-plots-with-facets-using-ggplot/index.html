@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> Combining inset plots with facets using ggplot - Clare&#39;s Blog </title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="referrer" content="no-referrer">
+    <meta name="description" content="Description for the page" />
+    <meta property="og:site_name" content="Clare&#39;s Blog" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://clarewest.github.io/blog-hugo/post/2019-08-27-combining-inset-plots-with-facets-using-ggplot/" />
+    <meta property="og:title" content="Combining inset plots with facets using ggplot" />
+    <meta property="og:image" content="https://clarewest.github.io/blog-hugoimages/image.png" />
+    <meta property="og:description" content="Description for the page" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <meta name="twitter:title" content="Combining inset plots with facets using ggplot" />
+    <meta name="twitter:description" content="Description for the page" />
+    <meta name="twitter:image" content="https://clarewest.github.io/blog-hugoimages/image.png" />
+
+    <link rel="canonical" href="https://clarewest.github.io/blog-hugo/post/2019-08-27-combining-inset-plots-with-facets-using-ggplot/">
+    <script src="https://kit.fontawesome.com/015607bfd6.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha512-MoRNloxbStBcD8z3M/2BmnT+rg4IsMxPkXaGh2zD6LGNNFE80W3onsAhRcMAMrSoyWL9xD7Ert0men7vR8LUZg==" crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://clarewest.github.io/blog-hugo/css/custom.css" />
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/github-gist.min.css" integrity="sha512-od7JLoOTxM8w/HSKGzP9Kexc20K9p/M2zxSWsd7H1e4Ctf+8SQFtCWEZnW5u6ul5ehSECa5QmOk9ju2nQMmlVA==" crossorigin="anonymous" />
+    
+
+    
+
+    <link rel="shortcut icon"
+        href="https://clarewest.github.io/blog-hugo/images/favicon.png">
+
+    
+    <link href="https://clarewest.github.io/blog-hugo/index.xml" rel="alternate" type="application/rss+xml" title="Clare&#39;s Blog" />
+    
+</head>
+
+<body>
+    
+    <div class="mt-xl header">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <a href="https://clarewest.github.io/blog-hugo">
+                    <h1 class="name">Clare&#39;s Blog</h1>
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <ul class="nav nav-primary">
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="https://clarewest.github.io/blog-hugo/">
+                        
+                        Home
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="https://clarewest.github.io/blog-hugo/about/">
+                        
+                        About
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/clarewest">
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="https://twitter.com/claree_west">
+                        
+                        Twitter
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="https://clarewest.github.io">
+                        
+                        Website
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-12 col-lg-8">
+                    <h1 class="mx-0 mx-md-4">Combining inset plots with facets using ggplot</h1>
+                    <div class="markdown">
+                        
+    <p>I recently spent some time working out how to include mini inset plots
+within ggplot facets, and I thought I would share my code in case anyone
+else wants to achieve a similar thing.</p>
+<p>The resulting plot looks
+something like this:</p>
+<img src="images/all_facet_insets.png" alt="" width="100%">
+<p>First let’s load some packages that are required for this example (and
+for an easy life, in general):</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">## some essentials from the tidyverse</span>
+library(ggplot2)   <span style="color:#008000">## for plotting</span>
+library(dplyr)     <span style="color:#008000">## for data manipulation </span>
+library(lubridate) <span style="color:#008000">## for handling dates </span>
+</code></pre></div><p>For this example, I’ll be playing with some Nobel Prize data. This
+<a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-05-14">dataset</a>
+was featured in the weekly
+<a href="https://twitter.com/search?src=typd&amp;q=%23tidytuesday">#TidyTuesday</a> R
+community event, which is led by
+<a href="https://twitter.com/thomas_mock">@thomas_mock</a> and
+<a href="https://twitter.com/R4DSCommunity">@R4DSCommunity</a>, and
+<a href="https://nsgrantham.shinyapps.io/tidytuesdayrocks/">catalogued</a> by
+<a href="https://twitter.com/nsgrantham">@nsgrantham</a></p>
+<p>Start by reading in the data and adding the age of each laureate at the
+time of the award, based on their birth date and the prize
+year.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">nobel &lt;- read.csv(<span style="color:#a31515">&#34;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winners.csv&#34;</span>)
+plot_data &lt;- 
+  nobel %&gt;% 
+  mutate(prize_date = paste0(prize_year, <span style="color:#a31515">&#34;-12-10&#34;</span>),  
+         age = time_length(interval(ymd(birth_date), ymd(prize_date)), <span style="color:#a31515">&#34;year&#34;</span>)) %&gt;%
+  group_by(prize_year, laureate_id) %&gt;%
+  slice(1) %&gt;%  <span style="color:#008000">## make sure we have just one row per prizewinner per year</span>
+  ungroup()
+</code></pre></div><p>The main plot will show how the age of winners has changed over time for
+the six categories. Also presented - without comment - is the gender of
+each laureate.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">main_plot &lt;- 
+  ggplot(plot_data, aes(group=category)) + 
+  geom_point(aes(x=prize_year, y=age, colour=gender), alpha=0.6) + 
+  facet_wrap(~category) +  <span style="color:#008000">## plot each prize category separately </span>
+  theme_bw() +
+  labs(y=<span style="color:#a31515">&#34;Age of prize winner&#34;</span>, x=<span style="color:#a31515">&#34;Year of award&#34;</span>) + 
+  geom_smooth(aes(x=prize_year, y=age), method = <span style="color:#a31515">&#34;loess&#34;</span>) + <span style="color:#008000">## add a smoothed line</span>
+  scale_y_continuous(limits=c(0,100)) + 
+  scale_colour_discrete(breaks=c(<span style="color:#a31515">&#34;Female&#34;</span>,<span style="color:#a31515">&#34;Male&#34;</span>)) +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        legend.position = <span style="color:#a31515">&#34;bottom&#34;</span>,
+        legend.title = element_blank()) 
+
+main_plot
+</code></pre></div><img src="images/combining-inset-plots-with-facets-unnamed-chunk-3-1.png" alt="" width="100%"/>
+<p>It looks like Nobel prize winners are getting older for all categories
+other than Peace, which may be reassuring for those of us who are yet to
+receive one…</p>
+<p>As an example of the inset, let’s use a bar plot counting the number of
+people sharing the prize each year.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">## A function to plot the inset </span>
+get_inset &lt;- function(df){
+  p &lt;- ggplot(data=df %&gt;% 
+                group_by(category, prize_year) %&gt;% 
+                slice(1),
+              aes(x=prize_share, fill=category)) +
+    geom_bar() + 
+    scale_x_discrete( drop=<span style="color:#00f">FALSE</span>) + 
+    scale_fill_manual(values = c(<span style="color:#a31515">&#34;#00BF7D&#34;</span>, <span style="color:#a31515">&#34;#A3A500&#34;</span>, <span style="color:#a31515">&#34;#F8766D&#34;</span>,<span style="color:#a31515">&#34;#00B0F6&#34;</span>,<span style="color:#a31515">&#34;#E76BF3&#34;</span>,<span style="color:#a31515">&#34;#636363&#34;</span>)) + 
+    guides(fill=<span style="color:#00f">FALSE</span>) +
+    theme_bw(base_size=9) +  <span style="color:#008000">## makes everything smaller</span>
+    theme(panel.background = element_rect(fill=<span style="color:#a31515">&#34;white&#34;</span>),  <span style="color:#008000">## white plot background </span>
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(size=rel(0.7)), <span style="color:#008000">## tiny axis text</span>
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.background = element_blank())
+  return(p)
+}
+
+inset_plot &lt;- get_inset(plot_data) 
+</code></pre></div><p>Adding this plot as an inset is easy using
+<a href="https://ggplot2.tidyverse.org/reference/annotation_custom.html"><code>annotation_custom</code></a>.
+However, by definition, the annotation will be the same on every panel:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">## Add it as an inset</span>
+main_plot +
+    annotation_custom(grob=ggplotGrob(inset_plot), 
+                      ymin = -8, ymax=34, xmin=1955, xmax=2015)
+</code></pre></div><img src="images/combining-inset-plots-with-facets-unnamed-chunk-5-1.png" alt="" width="100%"/>
+<p><code>ymin</code>, <code>ymax</code>, <code>xmin</code> and <code>xmax</code> define where the inset (the grob) will
+be placed. This of course needs tweaking to find the right spot to avoid
+covering any important parts of the data (like Malala)</p>
+<p>When using facets, having the same plot on each facet is not very
+informative.</p>
+<p>To add different plots to each facet, I used a workaround modified from
+this <a href="https://stackoverflow.com/questions/37867758/insetting-on-facet-grided-and-grid-arrangeed-plot">StackOverflow
+answer</a>:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">## This function allows us to specify which facet to annotate</span>
+annotation_custom2 &lt;- function (grob, xmin = -<span style="color:#00f">Inf</span>, xmax = <span style="color:#00f">Inf</span>, ymin = -<span style="color:#00f">Inf</span>, ymax = <span style="color:#00f">Inf</span>, data) 
+{
+  layer(data = data, stat = StatIdentity, position = PositionIdentity, 
+        geom = ggplot2:::GeomCustomAnn,
+        inherit.aes = <span style="color:#00f">TRUE</span>, params = list(grob = grob, 
+                                          xmin = xmin, xmax = xmax, 
+                                          ymin = ymin, ymax = ymax))
+}
+</code></pre></div><p>Use the <code>data</code> argument to place the inset on the relevant facet, either
+by subsetting the actual data used to plot the inset, or just make a
+dataframe containing the aestetic (<code>aes</code>) used to divide into facets
+(here, it’s category).</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">main_plot +
+    annotation_custom2(grob=ggplotGrob(inset_plot), 
+                      data = data.frame(category=<span style="color:#a31515">&#34;Chemistry&#34;</span>),
+                      ymin = -8, ymax=34, xmin=1955, xmax=2015)
+</code></pre></div><img src="images/combining-inset-plots-with-facets-unnamed-chunk-7-1.png" alt="" width="100%"/>
+<p>To do this for all the facets, I’ll use <code>split()</code> to divide the
+dataframe into categories, and <code>map()</code> from the <a href="https://purrr.tidyverse.org/"><code>purrr</code>
+package</a> to apply our
+<code>annotation_custom2()</code> function to each subset and return the results as
+a list. See the StackOverflow for a solution using <code>plyr</code> instead, if
+you prefer. This can then be added to the plot:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">library(purrr)
+
+insets &lt;- plot_data %&gt;% 
+  split(f = .$category) %&gt;%
+  purrr::map(~annotation_custom2(
+    grob = ggplotGrob(get_inset(.) +
+                        scale_y_continuous(limits=c(0,105), breaks = c(0, 50, 100))), 
+    data = data.frame(category=unique(.$category)),
+    ymin = -8, ymax=34, xmin=1955, xmax=2015)
+  )
+
+
+main_plot + insets
+</code></pre></div><img src="images/combining-inset-plots-with-facets-unnamed-chunk-8-1.png" alt="" width="100%"/>
+<p>We can now draw the groundbreaking conclusion that when it comes to
+Nobel glory, Literature is a more solitary field than Medicine.</p>
+<p>And now just for fun, while we’re here:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">multiple_winners &lt;- 
+  plot_data %&gt;% 
+  group_by(laureate_id) %&gt;% 
+  filter(length(laureate_id) &gt; 1)
+
+main_plot + 
+  insets +
+  geom_point(data = multiple_winners, 
+             aes(x=prize_year, y=age), shape = 1, alpha=0.7) +
+  ggrepel::geom_text_repel(data = multiple_winners, 
+                           aes(label=gsub(<span style="color:#a31515">&#34;,.*$&#34;</span>,<span style="color:#a31515">&#34;&#34;</span>,full_name), 
+                               x=prize_year, y=age, group=full_name), 
+                           size=2, force=10, nudge_y = 45, segment.size=0.15)
+</code></pre></div><img src="images/combining-inset-plots-with-facets-unnamed-chunk-9-1.png" alt="" width="100%"/>
+<p><em>This blog post was originally posted on the <a href="https://www.blopig.com/blog/https://www.blopig.com/blog/2019/08/combining-inset-plots-with-facets-using-ggplot2/">OPIG blog</a>.</em></p>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="comments">
+    <div class="py-3 content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-12 col-lg-8">
+                    <div class="comments">
+                        <script src="https://utteranc.es/client.js" repo=""
+                            issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async>
+                            </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <footer class="site-footer">
+<div class="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-lg-8">
+
+                      <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Clare E. West</li></ul>
+      </div>
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          <li>
+            <a href="https://github.com/clarewest">
+                                  <i class="fa fa-github social-icon"></i>
+
+                <span class="username">clarewest</span>
+                </a>
+                </li>
+                <li>
+                  <a href="http://twitter.com/claree_west">
+                    <i class="fa fa-twitter social-icon"></i>
+                    <span class="username">claree_west</span></a>
+                    </li>
+                    </ul>
+      
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Data adventures of a former biochemist.</p>
+      </div>
+      </div>
+                       
+                        
+                  </div>
+        </div>
+    </div>
+</div>
+</footer>
+
+
+    
+
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js" integrity="sha512-TDKKr+IvoqZnPzc3l35hdjpHD0m+b2EC2SrLEgKDRWpxf2rFCxemkgvJ5kfU48ip+Y+m2XVKyOCD85ybtlZDmw==" crossorigin="anonymous"></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/r.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/python.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/stan.min.js" defer></script>
+        
+        <script>
+            window.addEventListener('load', function() {
+                hljs.initHighlighting();
+            }, true);
+        </script>
+    
+
+    
+
+    
+    
+        
+<script src="https://clarewest.github.io/blog-hugo/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+</body>
+
+</html>

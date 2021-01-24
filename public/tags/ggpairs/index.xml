@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ggpairs on Clare&#39;s Blog</title>
+    <link>https://clarewest.github.io/blog-hugo/tags/ggpairs/</link>
+    <description>Recent content in ggpairs on Clare&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 11 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://clarewest.github.io/blog-hugo/tags/ggpairs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Brief introduction to ggpairs</title>
+      <link>https://clarewest.github.io/blog-hugo/post/2019-06-11-brief-introduction-to-ggpairs/</link>
+      <pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/post/2019-06-11-brief-introduction-to-ggpairs/</guid>
+      <description>&lt;p&gt;In this blog post I will introduce a fun R plot, ggpairs, that&amp;rsquo;s useful for exploring distributions and correlations.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

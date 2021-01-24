@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Clare&#39;s Blog</title>
+    <link>https://clarewest.github.io/blog-hugo/categories/</link>
+    <description>Recent content in Categories on Clare&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 09 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://clarewest.github.io/blog-hugo/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>package</title>
+      <link>https://clarewest.github.io/blog-hugo/categories/package/</link>
+      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/categories/package/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>https://clarewest.github.io/blog-hugo/categories/r/</link>
+      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>plotting</title>
+      <link>https://clarewest.github.io/blog-hugo/categories/plotting/</link>
+      <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/categories/plotting/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>commandline</title>
+      <link>https://clarewest.github.io/blog-hugo/categories/commandline/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/categories/commandline/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>personal</title>
+      <link>https://clarewest.github.io/blog-hugo/categories/personal/</link>
+      <pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/categories/personal/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

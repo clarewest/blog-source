@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>upsetr on Clare&#39;s Blog</title>
+    <link>https://clarewest.github.io/blog-hugo/tags/upsetr/</link>
+    <description>Recent content in upsetr on Clare&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 26 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://clarewest.github.io/blog-hugo/tags/upsetr/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>UpSetR: Beyond the Venn diagram</title>
+      <link>https://clarewest.github.io/blog-hugo/post/2020-03-26-upsetr-beyond-the-venn-diagram/</link>
+      <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/post/2020-03-26-upsetr-beyond-the-venn-diagram/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/UpSetR/readme/README.html&#34;&gt;&lt;code&gt;UpSetR&lt;/code&gt;&lt;/a&gt;
+is a package for visualising the intersections of many more sets than is
+feasible with, for example, Venn diagrams. They are particularly useful
+when there are many sets but the intersections are relatively sparsely
+populated. In my research, I find these plots extremely powerful for
+showing large amounts of information in an attractive and intuitive way,
+with lots of options for exploring the data.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jq on Clare&#39;s Blog</title>
+    <link>https://clarewest.github.io/blog-hugo/tags/jq/</link>
+    <description>Recent content in jq on Clare&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 03 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://clarewest.github.io/blog-hugo/tags/jq/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Handling JSON data with jq</title>
+      <link>https://clarewest.github.io/blog-hugo/post/handling-json-data-with-jq/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://clarewest.github.io/blog-hugo/post/handling-json-data-with-jq/</guid>
+      <description>&lt;p&gt;For a new project I&amp;rsquo;ve unwillingly transitioned from the safety and comfort of CSV files to a scary new world of JSON files.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
