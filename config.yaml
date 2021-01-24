@@ -35,9 +35,9 @@ menu:
     - name: Home
       url: /
       weight: 1
-    - name: About
-      url: /about/
-      weight: 2
+ #   - name: About
+#      url: /about/
+ #     weight: 2
     - name: GitHub
       url: https://github.com/clarewest
       weight: 3
