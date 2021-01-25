@@ -1,4 +1,4 @@
-baseurl: https://clarewest.github.io/blogg
+baseurl: https://clarewest.github.io/blog
 title: Clare's Blog
 author: CE West
 canonifyurls: yes
@@ -40,10 +40,10 @@ menu:
  #     weight: 2
     - name: GitHub
       url: https://github.com/clarewest
-      weight: 3
+      weight: 2
     - name: Twitter
       url: https://twitter.com/claree_west
-      weight: 4
+      weight: 3
     - name: Website
       url: https://clarewest.github.io
  #   - name: Subscribe
