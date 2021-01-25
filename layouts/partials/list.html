@@ -4,6 +4,9 @@
         <h2 class="meta-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
         <div class="meta-date">
             <time>{{ .Date.Format (.Site.Params.dateform | default "2006/01/02") }}</time>
+                 <span class="reading-time middot">
+                        {{ .ReadingTime }} min read
+                    </span>
             <p>{{ .Summary }}</p>
             
         </div>
