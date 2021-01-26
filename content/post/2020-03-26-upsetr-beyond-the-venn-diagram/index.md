@@ -9,8 +9,8 @@ categories:
 tags:
   - upsetr
   - packages
-meta_img: images/image.png
-description: Description for the page
+meta_img: images/beyond-the-venn-diagramunnamed-chunk-12-1.png
+description: A package for visualising the intersection of many sets
 ---
 
 [`UpSetR`](https://cran.r-project.org/web/packages/UpSetR/readme/README.html)

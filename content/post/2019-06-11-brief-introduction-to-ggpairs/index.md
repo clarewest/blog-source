@@ -11,7 +11,7 @@ tags:
   - ggpairs
   - packages
 meta_img: images/image.png
-description: Description for the page
+description: Intruduction to ggpairs, a fun R plot for exploring distributions and correlations
 ---
 
 

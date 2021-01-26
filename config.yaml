@@ -26,6 +26,8 @@ params:
   progressively: no
   sitename: Clare's Blog
   uselatex: yes
+  twitter: claree_west
+  logofile: images/favicon.png
 markup:
   goldmark:
     renderer:

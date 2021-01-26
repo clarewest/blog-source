@@ -10,7 +10,7 @@ tags:
   - internship
   - policy
 meta_img: images/image.png
-description: Description for the page
+description: My experience as a POST Fellow
 ---
 
 Last term I took a break from folding proteins to spend three months working in Westminster at the [Parliamentary Office of Science and Technology (POST)](https://www.parliament.uk/post).

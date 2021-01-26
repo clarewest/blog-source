@@ -10,7 +10,7 @@ tags:
   - usethis
   - testthat
   - roxygen2
-meta_img: images/image.png
+meta_img: images/intro-to-r-packages_summary.png
 description: An overview of how usethis can help you create, develop, document and test R packages and projects
 ---
 
@@ -317,7 +317,7 @@ You can now view the documentation in RStudio as usual using
     > ?say_hello
     Rendering development documentation for 'say_hello'
 
-<img src="https://clarewest.github.io/blog/assets/img/intro-to-r-packages_help.png" width="300" />
+<img src="images/intro-to-r-packages_help.png" alt="" width="100%"/>
 
 ### Automating tests
 

@@ -9,13 +9,9 @@ tags:
   - rstudio
   - conference
   - shiny
-  - packages
   - tidyverse
   - dataviz
-  - SQL
-  - tidymodels
-meta_img: images/image.png
-description: Description for the page
+description: Summary of the talks I attended at rstudio's 2021 conference
 ---
 
 rstudio's annual conference went online and global this year, which meant that I could attend for the first time. There were lots of interesting talks, and it was great to see familiar faces from GitHub/Twitter avatars come to life! This is a summary of the notes I took during the talks I attended, I will add links to the full talks on the rstudio website when they become available.
