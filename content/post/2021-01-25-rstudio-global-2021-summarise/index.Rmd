@@ -42,7 +42,7 @@ render_toc("index.Rmd")
 ### Speeding up Shiny, *Pedro Silva* {#speeding-up-shiny}
 *Use update functions for faster Shiny apps*
 
-[Update functions](https://mastering-shiny.org/action-dynamic.html) speed up Shiny apps by telling the browser to update existing elements, rather than replacing it completely. Shiny inputs each have a corresponding update function, and just this small change in the code can achieve large speed improvements per element (e.g. from ~15ms to ~10ms per for the example below). For more complicated widgets such as `DT::datatable`, proxy functions should be used instead. 
+[Update functions](https://mastering-shiny.org/action-dynamic.html) speed up Shiny apps by telling the browser to update an existing element, rather than replacing it completely. Shiny inputs each have a corresponding update function, and just this small change in the code can achieve large speed improvements per element (e.g. from ~15ms to ~10ms for the example below). For more complicated widgets such as `DT::datatable`, proxy functions should be used instead. 
 
 <div class="figure">
 ![](images/update_function.png)
@@ -51,11 +51,12 @@ render_toc("index.Rmd")
 
 </div>
 
+
 ### Shiny Open Source, *Dominik Krzemiński* {#shiny-open-source}
 *Dominik Krzemiński shared some of his favourite Shiny packages*
 
 - [`ShinyJS`](https://deanattali.com/shinyjs/): Perform common useful JavaScript actions in Shiny e.g. hiding elements, disabling input, delaying code execution
-- [`shinyWidgets](http://shinyapps.dreamrs.fr/shinyWidgets/)`: a big collection of nice, well-documented components to enhance apps
+- [`shinyWidgets`](http://shinyapps.dreamrs.fr/shinyWidgets/): a big collection of nice, well-documented components to enhance apps
 - [`bs4Dash`](https://rinterface.github.io/bs4Dash/) - bootstrap skins for Shiny apps
 - [`shinyMobile`](https://rinterface.github.io/shinyMobile/) - helps create mobile-ready apps
 - [`shiny.semantic`](https://github.com/Appsilon/shiny.semantic) - create an alternative look for Shiny apps
@@ -68,14 +69,14 @@ shinycssloaders::withSpinner(
 He also highlighted the [nanxstats/awesome-shiny-extensions](https://github.com/nanxstats/awesome-shiny-extensions) GitHub repo from [Nan Xiao](https://twitter.com/nanxstats) (sidenote: also the author of the theme I use for this blog!)
 
 ### Best practices in developing Shiny apps, *Olga Mierzwa-Sulima* {#shiny-best-practices}
-- [**shiny modules**](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) enables you to decompose your application, providing encapsulation, modularity, reusability, and the ability to test components. 
+- [**shiny modules**](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) enable you to decompose your application, providing encapsulation, modularity, reusability, and the ability to test components. 
 - [**R6 classes**](https://adv-r.hadley.nz/r6.html) provide an implementation of object-orientated programming in R. It introduces a clear system of getting the current state, operations, auxiliary functions and initial state of the object. Keep each class in a separate script, and store scripts in a directory separated from other code. 
 - **wahini/modules** is an organisational unit for source code. It enforces rigour when defining dependencies, as you have to explicitly declare which functions or packages your code is using. 
 - [**lintr**](https://github.com/jimhester/lintr) ensures high quality, automated tests through e.g. GitHub actions. 
 - [**Project templates**](https://rstudio.github.io/rstudio-extensions/rstudio_project_templates.html) mean you don't have to start from scratch every time - instead initialise project repos from a template that includes a simple shiny app with shiny modules, modules, unit tests and automatic tests set up
 - **Development environments** prevent projects interfering with each other and ensures the code produces the same result on different machines. Olga recommends Docker and [`renv`](https://rstudio.github.io/renv/articles/renv.html) for managing dev environments. 
-- **Testing** is important - set up testing architecture early (start from a project template) so that you don't forget, write at least some tests for each code, and don't accept pull requests that do not include or pass tests. Data validation should have the most tests. Olga recommends the `data.validator` package, which automatically generates reports from the tests. 
-- **Hallway useability test** - get someone passing in the hallway to use the app. With 5 people, you can learn 85% of what there is to learn about usability problems!
+- **Testing** is important - set up testing architecture early (start from a project template) so that you don't forget, write at least some tests for each piece of code, and don't accept pull requests that do not include or pass tests. Data validation should have the most tests. Olga recommends the `data.validator` package, which automatically generates reports from the tests. 
+- **Hallway usability test** - get someone passing in the hallway to use the app. With five people, you can learn 85% of what there is to learn about usability problems!
 
 ### Scaling Shiny to thousands of users, *Damian Rodziewicz* {#scaling-shiny}
 *Why Shiny apps get slow with many users and how to fix it*
@@ -155,7 +156,7 @@ Maintain laser focus on one thing at a time, because the cost of context-switchi
 ### Always look on the bright side of plots, *Kara Woo* {#ggplot-misunderstandings}
 *Common misunderstandings/errors with ggplot*
 
-Scale transformation happens before statistical summaries. When using `scale_x_continuous(limits = c(min, max))` the points outside the limits are converted to NA before the statistical summaries are calculated. Instead, use `coord_cartesian(xlim =c(min, max))` to zoom in on the plot, and the points outside will still be included in the statistical summaries.
+Scale transformation happens before statistical summaries. When using `scale_x_continuous(limits = c(min, max))` the points outside the limits are converted to `NA` before the statistical summaries are calculated. Instead, use `coord_cartesian(xlim =c(min, max))` to zoom in on the plot, and the points outside will still be included in the statistical summaries.
 <img src=""> 
 
 <div class="figure">
@@ -196,7 +197,7 @@ I was really excited about John Burn-Murdoch's keynote, as I've been following h
 2. **A confused reader means a bad chart; anticipate confusion and include explanations in situ.**
 Example: Early in the pandemic, using a log scale to visualise the trajectories between different countries was appropriate but caused confusion for some readers. By explaining the log scale in a Twitter thread and staying in the conversation, John was able to improve peoples' understanding of the chart.
 3. **Consider the emotional and political context.** 
-Data visualisation is personal and political, especially for partisan issues, and people bring their existing beliefs to the chart. While some people will look at the numbers analytically, others will take a single overarching message from the chart: things are good or things are bad. Keep that in mind, and try to minimise the risk that people have a negative reaction because of a design choice (but if object to the data, that's on them). 
+Data visualisation is personal and political, especially for partisan issues, and people bring their existing beliefs to the chart. While some people will look at the numbers analytically, others will take a single overarching message from the chart: things are good or things are bad. Keep that in mind, and try to minimise the risk that people have a negative reaction because of a design choice (but if they object to the data, that's on them). 
 4. **Stick around, don't just publish and vanish.** If we want to do the best we can, and effectively reach as many people as possible, then communication is critical. Explicitly asking for feedback on your charts will improve the quality of the feedback, and criticism will be more constructive. 
 5. **Ease of understanding has to come first.** Trying to be too clever with visualisation can make it more difficult to understand and lose your audience's trust.
 Example: Seven-day rolling average plots smoothed noisy data, but meant the final data point didn't match the numbers in the day's headlines. This could be improved using a smoothing spline, but this approach was harder for the average reader to understand compared to a rolling average. 

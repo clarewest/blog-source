@@ -47,7 +47,7 @@ h4, .h4, h5, .h5 {
 <div id="speeding-up-shiny" class="section level3">
 <h3>Speeding up Shiny, <em>Pedro Silva</em></h3>
 <p><em>Use update functions for faster Shiny apps</em></p>
-<p><a href="https://mastering-shiny.org/action-dynamic.html">Update functions</a> speed up Shiny apps by telling the browser to update existing elements, rather than replacing it completely. Shiny inputs each have a corresponding update function, and just this small change in the code can achieve large speed improvements per element (e.g. from ~15ms to ~10ms per for the example below). For more complicated widgets such as <code>DT::datatable</code>, proxy functions should be used instead.</p>
+<p><a href="https://mastering-shiny.org/action-dynamic.html">Update functions</a> speed up Shiny apps by telling the browser to update an existing element, rather than replacing it completely. Shiny inputs each have a corresponding update function, and just this small change in the code can achieve large speed improvements per element (e.g. from ~15ms to ~10ms for the example below). For more complicated widgets such as <code>DT::datatable</code>, proxy functions should be used instead.</p>
 <div class="figure">
 <p><img src="images/update_function.png" /></p>
 <p class="caption">
@@ -60,7 +60,7 @@ How to use an update function
 <p><em>Dominik Krzemiński shared some of his favourite Shiny packages</em></p>
 <ul>
 <li><a href="https://deanattali.com/shinyjs/"><code>ShinyJS</code></a>: Perform common useful JavaScript actions in Shiny e.g. hiding elements, disabling input, delaying code execution</li>
-<li>[<code>shinyWidgets](http://shinyapps.dreamrs.fr/shinyWidgets/)</code>: a big collection of nice, well-documented components to enhance apps</li>
+<li><a href="http://shinyapps.dreamrs.fr/shinyWidgets/"><code>shinyWidgets</code></a>: a big collection of nice, well-documented components to enhance apps</li>
 <li><a href="https://rinterface.github.io/bs4Dash/"><code>bs4Dash</code></a> - bootstrap skins for Shiny apps</li>
 <li><a href="https://rinterface.github.io/shinyMobile/"><code>shinyMobile</code></a> - helps create mobile-ready apps</li>
 <li><a href="https://github.com/Appsilon/shiny.semantic"><code>shiny.semantic</code></a> - create an alternative look for Shiny apps</li>
@@ -74,14 +74,14 @@ How to use an update function
 <div id="shiny-best-practices" class="section level3">
 <h3>Best practices in developing Shiny apps, <em>Olga Mierzwa-Sulima</em></h3>
 <ul>
-<li><a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html"><strong>shiny modules</strong></a> enables you to decompose your application, providing encapsulation, modularity, reusability, and the ability to test components.</li>
+<li><a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html"><strong>shiny modules</strong></a> enable you to decompose your application, providing encapsulation, modularity, reusability, and the ability to test components.</li>
 <li><a href="https://adv-r.hadley.nz/r6.html"><strong>R6 classes</strong></a> provide an implementation of object-orientated programming in R. It introduces a clear system of getting the current state, operations, auxiliary functions and initial state of the object. Keep each class in a separate script, and store scripts in a directory separated from other code.</li>
 <li><strong>wahini/modules</strong> is an organisational unit for source code. It enforces rigour when defining dependencies, as you have to explicitly declare which functions or packages your code is using.</li>
 <li><a href="https://github.com/jimhester/lintr"><strong>lintr</strong></a> ensures high quality, automated tests through e.g. GitHub actions.</li>
 <li><a href="https://rstudio.github.io/rstudio-extensions/rstudio_project_templates.html"><strong>Project templates</strong></a> mean you don’t have to start from scratch every time - instead initialise project repos from a template that includes a simple shiny app with shiny modules, modules, unit tests and automatic tests set up</li>
 <li><strong>Development environments</strong> prevent projects interfering with each other and ensures the code produces the same result on different machines. Olga recommends Docker and <a href="https://rstudio.github.io/renv/articles/renv.html"><code>renv</code></a> for managing dev environments.</li>
-<li><strong>Testing</strong> is important - set up testing architecture early (start from a project template) so that you don’t forget, write at least some tests for each code, and don’t accept pull requests that do not include or pass tests. Data validation should have the most tests. Olga recommends the <code>data.validator</code> package, which automatically generates reports from the tests.</li>
-<li><strong>Hallway useability test</strong> - get someone passing in the hallway to use the app. With 5 people, you can learn 85% of what there is to learn about usability problems!</li>
+<li><strong>Testing</strong> is important - set up testing architecture early (start from a project template) so that you don’t forget, write at least some tests for each piece of code, and don’t accept pull requests that do not include or pass tests. Data validation should have the most tests. Olga recommends the <code>data.validator</code> package, which automatically generates reports from the tests.</li>
+<li><strong>Hallway usability test</strong> - get someone passing in the hallway to use the app. With five people, you can learn 85% of what there is to learn about usability problems!</li>
 </ul>
 </div>
 <div id="scaling-shiny" class="section level3">
@@ -154,7 +154,7 @@ Maintain laser focus on one thing at a time, because the cost of context-switchi
 <div id="ggplot-misunderstandings" class="section level3">
 <h3>Always look on the bright side of plots, <em>Kara Woo</em></h3>
 <p><em>Common misunderstandings/errors with ggplot</em></p>
-<p>Scale transformation happens before statistical summaries. When using <code>scale_x_continuous(limits = c(min, max))</code> the points outside the limits are converted to NA before the statistical summaries are calculated. Instead, use <code>coord_cartesian(xlim =c(min, max))</code> to zoom in on the plot, and the points outside will still be included in the statistical summaries.
+<p>Scale transformation happens before statistical summaries. When using <code>scale_x_continuous(limits = c(min, max))</code> the points outside the limits are converted to <code>NA</code> before the statistical summaries are calculated. Instead, use <code>coord_cartesian(xlim =c(min, max))</code> to zoom in on the plot, and the points outside will still be included in the statistical summaries.
 <img src=""></p>
 <div class="figure">
 <p><img src="images/ggplot_kara_woo.png" /></p>
@@ -189,7 +189,7 @@ tidyverse functions vs SQL commands cheatsheet
 <li><strong>A confused reader means a bad chart; anticipate confusion and include explanations in situ.</strong>
 Example: Early in the pandemic, using a log scale to visualise the trajectories between different countries was appropriate but caused confusion for some readers. By explaining the log scale in a Twitter thread and staying in the conversation, John was able to improve peoples’ understanding of the chart.</li>
 <li><strong>Consider the emotional and political context.</strong>
-Data visualisation is personal and political, especially for partisan issues, and people bring their existing beliefs to the chart. While some people will look at the numbers analytically, others will take a single overarching message from the chart: things are good or things are bad. Keep that in mind, and try to minimise the risk that people have a negative reaction because of a design choice (but if object to the data, that’s on them).</li>
+Data visualisation is personal and political, especially for partisan issues, and people bring their existing beliefs to the chart. While some people will look at the numbers analytically, others will take a single overarching message from the chart: things are good or things are bad. Keep that in mind, and try to minimise the risk that people have a negative reaction because of a design choice (but if they object to the data, that’s on them).</li>
 <li><strong>Stick around, don’t just publish and vanish.</strong> If we want to do the best we can, and effectively reach as many people as possible, then communication is critical. Explicitly asking for feedback on your charts will improve the quality of the feedback, and criticism will be more constructive.</li>
 <li><strong>Ease of understanding has to come first.</strong> Trying to be too clever with visualisation can make it more difficult to understand and lose your audience’s trust.
 Example: Seven-day rolling average plots smoothed noisy data, but meant the final data point didn’t match the numbers in the day’s headlines. This could be improved using a smoothing spline, but this approach was harder for the average reader to understand compared to a rolling average.</li>
