@@ -10,6 +10,7 @@ tags:
   - ggplot2
 meta_img: images/all_facet_insets.png
 description: How to include mini inset plots within ggplot facets
+cardtype: summary_large_image
 ---
 
 I recently spent some time working out how to include mini inset plots
