@@ -28,6 +28,7 @@ params:
   uselatex: yes
   twitter: claree_west
   logofile: images/favicon.png
+  commentsrepo: clarewest/blog-comments
 markup:
   goldmark:
     renderer:
