@@ -13,6 +13,8 @@ description: How to include mini inset plots within ggplot facets
 cardtype: summary_large_image
 ---
 
+
+
 I recently spent some time working out how to include mini inset plots
 within ggplot facets, and I thought I would share my code in case anyone
 else wants to achieve a similar thing. 
