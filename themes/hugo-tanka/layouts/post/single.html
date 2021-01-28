@@ -4,6 +4,9 @@
 <div class="content">
     <div class="container">
         <div class="row justify-content-center">
+          <div class="col-lg-1 justify-content-right">
+              <applause-button style="width: 58px; height: 58px;" multiclap="true" url="{{ .Permalink }}"/>
+          </div>
             <div class="col-sm-12 col-lg-8">
                 <h1 class="mx-0 mx-md-4 blog-post-title">{{ .Title }}</h1>
 
@@ -62,6 +65,9 @@
                 </div>
                 {{ end }}
             </div>
+          <div class="col-lg-1 justify-content-right">
+            </div>
+
         </div>
     </div>
 </div>
