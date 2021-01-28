@@ -35,7 +35,7 @@ I auditioned three packages for making nice tables in Shiny apps: `DT`, `formatt
 The data I'll use today is the Animal Crossing dataset from [VillagerDB](https://github.com/jefflomacy/villagerdb) via [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-05/readme.md). 
 
 ```{css, echo = FALSE}
-h1, .h1, h2, .h2, h3, .h3 {
+h2, .h2, h3, .h3 {
     margin-top: 40px;
 }
 
