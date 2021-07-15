@@ -1,0 +1,285 @@
+---
+title: 'Crash Course in Open Targets Part 3: Taming the Data Downloads'
+author: CE West
+date: '2021-07-29'
+slug: crash-course-in-open-targets-part-2
+categories:
+  - science
+  - python
+tags:
+  - bioinformatics
+  - genetics
+meta_img: images/image.png
+cardtype: summary
+description: An overview of accessing Open Targets data through the data downloads
+draft: true
+---
+
+For one whole year I happily hammered away at the APIs, but my queries kept getting bigger and more complex and eventually I wanted to use just about every piece of data that Open Targets provides. The Open Targets team finally told me (to paraphrase): "Clare, it's time to grow up, the APIs aren't designed for what you're doing, use the data downloads instead". 
+
+<!--more-->
+
+
+At first I was hesitant about handling big confusing files on my little laptop, but they were right - it was a lot easier and it only took me one day to figure it out. I've had no trouble querying these large datasets on my 8GB RAM laptop. Sadly, I have had to cancel my plans to crowdsource a new MacBook Pro.
+
+## Data Downloads
+
+I really recommend using using the [data downloads](https://platform.opentargets.org/downloads) for Open Targets Platform if you are querying more than a few targets or diseases, especially if you are interested in lots of the annotations. While the Platform is extremely comprehensive, the data itself is not terribly big (<6GB) and you can easily download the whole thing. 
+
+The downloads are available [via FTP](http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/) in JSON and parquet format, and you can find download instructions and usage examples in Python and R [here](https://platform-docs.opentargets.org/data-access/datasets). For more examples of how to use the data, check out [Open Targets Community](https://community.opentargets.org/).
+
+For the Genetics Portal, the data is [available to download](https://genetics-docs.opentargets.org/technical-pipeline/data-download) in JSON format [via FTP](https://ftp.ebi.ac.uk/pub/databases/opentargets/genetics/). It's a lot bigger than the Platform - there are a few million variants after all - but you can always download specific parts of the data that you're interested in processing yourself, and supplement it with API calls. For example, locally I have the directories:
+
+- `lut`: look-up tables, containing details on genes, studies, variants, and study-study overlaps
+- `v2d`: [variant-to-disease](https://genetics-docs.opentargets.org/our-approach/assigning-traits-to-loci) information i.e. GWAS study, variant, effect size, p-value, the trait for the study and the EFO disease codes it was mapped to, etc
+- `v2d_coloc`:  results of the [colocalisation analysis](https://genetics-docs.opentargets.org/our-approach/colocalisation-analysis) performed between GWAS and eQTL/pQTL studies, as well as between pairs of GWAS studies with overlapping hits
+
+(that's 56GB of my laptop dedicated to the Genetics Portal, but I am a superfan).
+
+## Fast data access and querying using Spark
+
+Apache Spark is a superfast way to read and interact with the data downloads, and there are Spark interfaces available for Python ([PySpark](https://spark.apache.org/docs/latest/api/python/index.html)) and R ([sparklyr](https://spark.rstudio.com/)). If you're used to functional programming, for example using the `tidyverse`, `pandas`, or querying SQL databases, then handling data using Spark should feel relatively familiar.
+
+First, if you don't already have it, you have to [install Spark and PySpark](https://spark.apache.org/docs/latest/api/python/getting_started/index.html) (this is the hard part). 
+
+### Reading in the data
+
+Here's an example of reading in Open Targets Platform data in Python using PySpark:
+
+```{python, eval = FALSE}
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, explode
+
+## Set up Spark
+sc = pyspark.SparkContext()
+spark = SparkSession.builder \
+           .getOrCreate()
+
+## Data paths
+ot_platform = "path/to/platform/files/21.02/"
+ot_genetics = "path/to/portal/files/20022712/"
+
+## Read Open Targets platform data 
+diseases = (spark.read.parquet(ot_platform+"ETL_parquet/diseases/", header=True)
+            .withColumnRenamed("id","diseaseId")
+            .withColumnRenamed("name","diseaseName")
+            )
+targets = (spark.read.parquet(ot_platform+"ETL_parquet/targets/")
+           .withColumnRenamed("id","targetId")
+           .withColumnRenamed("approvedSymbol", "targetSymbol")
+           .withColumnRenamed("approvedName","targetName")
+           )
+evidences = spark.read.parquet(ot_platform+"ETL_parquet/evidences/succeeded")
+knowndrugs = spark.read.parquet(ot_platform+"ETL_parquet/knownDrugs")
+overall_associations = spark.read.parquet(ot_platform+"ETL_parquet/associations/indirect/byOverall/")
+
+## Read Open Targets Genetics Portal data
+studies = spark.read.json(ot_genetics+"lut/study-index/")
+v2d = spark.read.json(ot_genetics+"v2d/")
+coloc = spark.read.json(ot_genetics+"v2d_coloc/")
+
+```
+
+(Note that I rename some columns to make it easier to join them together later)
+
+### Inspecting available fields
+
+You can use `.printSchema()` to explore the data available for each dataframe. Let's have a look at the fields for known drugs:
+
+```{python, eval = FALSE}
+knowndrugs.printSchema()
+root
+ |-- drugId: string (nullable = true)
+ |-- targetId: string (nullable = true)
+ |-- diseaseId: string (nullable = true)
+ |-- phase: long (nullable = true)
+ |-- status: string (nullable = true)
+ |-- urls: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- niceName: string (nullable = true)
+ |    |    |-- url: string (nullable = true)
+ |-- ancestors: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- label: string (nullable = true)
+ |-- approvedSymbol: string (nullable = true)
+ |-- approvedName: string (nullable = true)
+ |-- targetClass: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- prefName: string (nullable = true)
+ |-- tradeNames: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- synonyms: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- drugType: string (nullable = true)
+ |-- mechanismOfAction: string (nullable = true)
+ |-- references: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- source: string (nullable = true)
+ |    |    |-- ids: array (nullable = true)
+ |    |    |    |-- element: string (containsNull = true)
+ |    |    |-- urls: array (nullable = true)
+ |    |    |    |-- element: string (containsNull = true)
+ |-- targetName: string (nullable = true)
+```
+
+### Filtering associations and evidence
+
+You can filter the data to get subsets that you're interested in. 
+
+For example, if you're only interested in target-disease **associations** that are based on genetic evidence, you can just read in associations from the datatype `genetic_association`: 
+
+```{python, eval = FALSE}
+
+## Associations by data type (e.g. genetic association)
+associations = spark.read.parquet(ot_platform+"ETL_parquet/associations/indirect/byDatatype/")
+gen_associations = associations.filter(col("datatypeId")=="genetic_association")
+
+gen_associations.printSchema()
+root
+ |-- targetId: string (nullable = true)
+ |-- diseaseId: string (nullable = true)
+ |-- datatypeId: string (nullable = true)
+ |-- datatypeHarmonicScore: double (nullable = true)
+ |-- datatypeEvidenceCount: long (nullable = true)
+ |-- diseaseLabel: string (nullable = true)
+ |-- targetName: string (nullable = true)
+ |-- targetSymbol: string (nullable = true)
+
+
+```
+
+You can also look at the **evidence** that supports associations, and filter based on a particular data source of interest. In this example, this will read in only evidence from the Genetics Portal (GWAS data):
+
+```{python, eval = FALSE}
+# Evidence from one source (e.g. Open Targets Genetics evidence)
+otg_evidences = spark.read.parquet(ot_platform+"ETL_parquet/evidences/succeeded/sourceId\=ot_genetics_portal/")
+```
+
+### Getting associations and evidence for targets and diseases
+
+You can easily subset and combine data by joining tables together through an ID column.
+
+For example, say I have a dataframe containing my diseases of interest (in this case, Parkinson's disease and Alzheimer's disease): 
+
+```{python, eval = FALSE}
+## My diseases of interest
+my_diseases = spark.createDataFrame(
+    [("EFO_0002508", "My Disease ID 1"), ("EFO_0000249", "My Disease ID 2")],
+    ["diseaseId","myDiseaseId"]  
+)
+
+my_diseases.show()
++-----------+---------------+
+|  diseaseId|    myDiseaseId|
++-----------+---------------+
+|EFO_0002508|My Disease ID 1|
+|EFO_0000249|My Disease ID 2|
++-----------+---------------+
+
+```
+
+I can then join this with the `diseases` dataframe on the `diseaseId` column to get disease annotations from Open Targets for those diseases:
+
+```{python, eval = FALSE}
+my_diseases_details = (my_diseases.join(diseases, "diseaseId", "left")
+                       .select("diseaseId", "myDiseaseId", "diseaseName", "description", "therapeuticAreas", "synonyms" )
+                       )
+            
+my_diseases_details.printSchema()
+root
+ |-- diseaseId: string (nullable = true)
+ |-- myDiseaseId: string (nullable = true)
+ |-- diseaseName: string (nullable = true)
+ |-- description: string (nullable = true)
+ |-- therapeuticAreas: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- synonyms: struct (nullable = true)
+ |    |-- hasBroadSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasExactSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasNarrowSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasRelatedSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+
+```
+
+To get the targets genetically associated with my diseases of interest, I join this with the `gen_associations` table, again on the `diseaseName` column. This will add all the columns from the genetic associations dataframe for the associations that involve my diseases of interest. 
+
+I can see how many targets are genetically associated with each disease by using `groupBy("diseaseName")` to group the rows by disease `count()` to count the number of rows in each group:
+
+```{python, eval = FALSE}
+my_diseases_associations = my_diseases_details.join(gen_associations,"diseaseId", "inner")
+
+my_diseases_associations.groupBy("diseaseName").count().show()
++-------------------+-----+
+|        diseaseName|count|
++-------------------+-----+
+|Parkinson's disease|  327|
+|Alzheimer's disease|  432|
++-------------------+-----+
+```
+
+I can get the target annotations for those targets by joining with the `targets` dataframe on the `targetId`, `targetSymbol` and `targetName` columns, which are common to both dataframes. 
+
+```{python, eval = FALSE}
+my_targets = my_diseases_associations.join(targets, ["targetId", "targetSymbol", "targetName"])
+```
+
+I then have all the Open Targets annotations to explore for these targets. I won't show them all (because there are so many!) but to demonstrate, here's how you can access information on the [tractability category](https://docs.targetvalidation.org/getting-started/target-tractability) and the functions of the targets:
+
+```{python, eval = FALSE}
+
+my_targets_details = (my_targets
+                      .orderBy(col("datatypeHarmonicScore"), 
+                               ascending = False)
+                      .select("targetSymbol", "tractability.smallmolecule.top_category", 
+                              explode("proteinAnnotations.functions"))
+                      )
+
+my_targets_details.show(5, truncate = 40)
++------------+---------------------------------------+----------------------------------------+
+|targetSymbol|tractability.smallmolecule.top_category|                                     col|
++------------+---------------------------------------+----------------------------------------+
+|       PSEN1|                 Clinical_Precedence_sm|Catalytic subunit of the gamma-secret...|
+|        PRKN|                Discovery_Precedence_sm|Functions within a multiprotein E3 ub...|
+|       PINK1|                 Predicted_Tractable_sm|Protects against mitochondrial dysfun...|
+|     ATP13A2|                                   null|ATPase which acts as a lysosomal poly...|
+|       LRRK2|                Discovery_Precedence_sm|Serine/threonine-protein kinase which...|
++------------+---------------------------------------+----------------------------------------+
+
+```
+
+
+Finally, let's bring in some Genetics Portal data. 
+
+In the following example, I get GWAS evidence that links targets to my diseases of interest, where the locus-to-gene score is greater than 0.5. Then I use the `studyId` field to join it with the `studies` dataframe, which contains information on the GWAS studies from the Genetics Portal. 
+
+```{python, eval = FALSE}
+my_diseases_evidence  = (my_diseases_associations
+                    # join on the target and disease fields common to the association and evidence dataframes
+                    .join(otg_evidences, ["diseaseId", "targetId", "targetName", "targetSymbol"], "inner")
+                    .select("targetId", "targetSymbol", "diseaseId", "diseaseName", "studyId", "variantId", "score")
+                    .filter(col("score")>0.5)
+                    )
+
+my_diseases_studies = (my_diseases_evidence
+                        .join(studies
+                              .withColumnRenamed("study_id", "studyId"),
+                              "studyId")
+                        )
+
+
+```
+
+### Conclusion
+
+I hope you enjoyed this whistlestop tour of Open Targets. If you want to graduate to the next level, check out [Google BigQuery access](https://platform-docs.opentargets.org/data-access/google-bigquery). If you want to learn more about the data and the platforms, check out the documentation ([Platform](https://platform-docs.opentargets.org/getting-started); [Genetics Portal](https://genetics-docs.opentargets.org/)) and publications [1, 2]. You can learn more about the [infrastructure](https://platform-docs.opentargets.org/infrastructure) and [read the source code on GitHub](https://github.com/opentargets). And if you find any great drug targets, let me know!
+
+
+1. Ochoa, D. et al. (2021). [Open Targets Platform: supporting systematic drug–target identification and prioritisation](http://dx.doi.org/10.1093/nar/gkaa1027). Nucleic Acids Research.
+
+2. Ghoussaini, M et al. (2021). [Open Targets Genetics: systematic identification of trait-associated genes using large-scale genetics and functional genomics](http://dx.doi.org/10.1093/nar/gkaa840). Nucleic Acids Research.
+

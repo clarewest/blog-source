@@ -1,0 +1,377 @@
+---
+title: "Crash course in Open Targets Part 1: Browsing and Querying Target-Disease Associations"
+author: CE West
+date: '2021-07-15'
+slug: crash-course-in-open-targets-part-1
+categories:
+  - science
+  - R
+tags:
+  - bioinformatics
+  - genetics
+meta_img: images/query_screenshot.png
+cardtype: summary_large_image
+description: Overview of using Open Targets to identify potential drug targets.
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>Open Targets is a public-private partnership for systematic identification, prioritisation, and validation of drug targets. In this three-part blog post series, I will give an overview of Open Targets, the data available, and how to access it through the web interface, programmatically through the APIs, and using the data downloads.</p>
+<!--more-->
+<p>As a postdoc at the <a href="https://www.cmd.ox.ac.uk/">Centre for Medicines Discovery</a> (University of Oxford) and <a href="https://www.kespine.org.uk/">UK SPINE</a>, I was working with Open Targets to identify potential drug development opportunities for age-related multimorbidities. We were interested in finding genes associated with a number of age-related diseases, dissecting the genetic evidence for those relationships, and assessing the novelty and tractability of these targets as potential drug targets. Luckily for me, the team at Open Targets have already spent several years thinking about exactly these problems. In these blog posts, I will try to distil everything I learnt during these months of privileged insider access to the Open Targets slack channels about how to use their platform and how to scale up as my queries got more and more demanding.</p>
+<div id="overview" class="section level3">
+<h3>Overview</h3>
+<p>There are two main resources: <a href="https://platform.opentargets.org/"><strong>Open Targets Platform</strong></a>, which integrates public domain data to enable target identification and prioritisation, and <a href="https://genetics.opentargets.org/"><strong>Open Targets Genetics Portal</strong></a>, which focuses on genome-wide association and functional genomics data.</p>
+<p>In brief, <strong>Open Targets Platform</strong> takes the best bits from a huge range of biological data resources, as well as internally generated data, and curates it as “evidence” to make connections between “targets” (a protein, protein complex, or RNA molecule) and “diseases” (Experimental Factor Ontology (EFO) terms). For example, an approved drug in ChEMBL with a known indication - the disease - and a known mechanism of action - the target - provides a piece of evidence that the target and disease are associated. All the evidence linking a target and disease is summarised as a target-disease “association”, with a score ranging from 0-1.</p>
+<p><strong>Open Targets Genetics</strong> aggregates human GWAS and functional genomics data to enable large-scale exploration and prioritisation of potential causal variants and genes. It calculates an in-house disease-agnostic Variant-to-Gene (V2G) mapping and a disease-specific Locus-to-Gene (L2G) mapping for trait-associated loci, with both methods using a score ranging from 0-1. It also enables systematic comparisons between studies, providing the number of shared independently-associated loci between studies, and performing pairwise colocalisation analysis.</p>
+</div>
+<div id="platform-and-genetics-portal-which-should-i-use" class="section level3">
+<h3>Platform and Genetics Portal: Which should I use?</h3>
+<p>Do you want to know all the targets genetically implicated in a disease? All the drugs that target your protein of interest? You want <strong>Open Targets Platform</strong> for that.</p>
+<p>Want to explore potential causal genes for an interesting GWAS hit? The genetic overlap between two different traits? You want <strong>Open Targets Genetics</strong> for that.</p>
+<p>Want to know the best most promising and tractable novel target for your disease of interest? Well actually, you have to decide that for yourself (sorry), but the <strong>Platform</strong> and <strong>Genetics Portal</strong> can help.</p>
+</div>
+<div id="accessing-the-data" class="section level2">
+<h2>Accessing the data</h2>
+<p>The resources can be explored through rich web interfaces, API queries, or data downloads. I’ve accessed data in the Platform and Genetics Portal just about every way there is (BigQuery is the final hurdle, <a href="https://platform-docs.opentargets.org/data-access/google-bigquery">don’t ask me about that</a>). My main piece of advice is this: if you are confused or don’t know how to get what you want, ask them. Seriously! Your problem will be solved and you will wonder why you spent a week trying to work it out yourself. The Open Targets team are extremely helpful (and patient) - and they like finding out all the weird and creative ways people are using their data to answer biological questions. You can also join the newly-created <a href="https://community.opentargets.org/">Open Targets Community</a> to see how other people are using the Platform and Genetics Portal, to get technical support from the team, and to get the latest updates from Open Targets.</p>
+<div id="browsing-the-web-interface" class="section level3">
+<h3>Browsing the web interface</h3>
+<p>The web interface is a great place to start for exploring specific diseases, targets, or hypotheses. I recommend having a browse to get a sense of the kind of data that is available. You can find more details about the web interface in the <a href="https://platform-docs.opentargets.org/web-interface">documentation</a>.</p>
+<p>You’ll probably want to go here when following up on interesting things that you find, and you can easily access an individual entity (target, disease, variant, GWAS) or target-disease association evidence via URL. It’s easy to generate these programmatically using the relevant ID codes for genes/targets (ENSEMBL IDs e.g. <code>ENSG00000130203</code>), diseases (EFO codes, e.g. <code>EFO_0001645</code>), GWAS studies (e.g. <code>GCST005194</code>) and variants (e.g. <code>19_44908822_C_T</code>). For example:</p>
+<ul>
+<li><p>Target profile (protein information, pathways, tractability, baseline expression, etc): <a href="https://platform.opentargets.org/target/ENSG00000130203">https://platform.opentargets.org/<strong>target</strong>/<strong>ENSG00000130203</strong></a></p></li>
+<li><p>Disease associations for a target: <a href="https://platform.opentargets.org/target/ENSG00000130203/associations">https://platform.opentargets.org/target/ENSG00000130203/<strong>associations</strong></a></p></li>
+<li><p>Evidence linking a target to a disease: <a href="https://platform.opentargets.org/evidence/ENSG00000130203/EFO_0001645">https://platform.opentargets.org/<strong>evidence</strong>/<strong>ENSG00000130203</strong>/<strong>EFO_0001645</strong></a></p></li>
+<li><p>Gene summary (associated studies for a given gene): <a href="https://genetics.opentargets.org/gene/ENSG00000130203">https://genetics.opentargets.org/<strong>gene</strong>/<strong>ENSG00000130203</strong></a></p></li>
+<li><p>Study summary (associated loci, lead variants, linked genes): <a href="https://genetics.opentargets.org/study/GCST005194">https://genetics.opentargets.org/<strong>study</strong>/<strong>GCST005194</strong></a></p></li>
+<li><p>Variant summary (variant details, assigned genes, PheWAS, linked variants): <a href="https://genetics.opentargets.org/variant/19_44908822_C_T">https://genetics.opentargets.org/<strong>variant</strong>/<strong>19_44908822_C_T</strong></a></p></li>
+<li><p>Association summary (gene prioritisation, colocalisation, credible set overlap): <a href="https://genetics.opentargets.org/study-locus/GCST005194/19_44908822_C_T">https://genetics.opentargets.org/<strong>study-locus</strong>/<strong>GCST005194</strong>/<strong>19_44908822_C_T</strong></a></p></li>
+</ul>
+</div>
+<div id="api-access-using-graphql" class="section level3">
+<h3>API access using GraphQL</h3>
+<p>In the revamped version of the Platform <a href="http://blog.opentargets.org/2021/04/29/next-gen-platform-released/">released at the end of April</a>, the web interface has been redesigned, and the data has been completely restructured to use a GraphQL API that replaces the previous REST API. The Genetics Portal also uses a GraphQL API.</p>
+<p>If you haven’t used a GraphQL API before, you’re going to love it. You get exactly the data you request (with no unwanted extras) in a predictable format. The graph representation feels natural for this kind of data, and your queries can traverse the graph, meaning that you can achieve in a single query what would have taken multiple separate queries using the REST API.</p>
+<p>For example, you can say: I want all the targets that are co-mentioned in the literature with my disease of interest (i.e. EuropePMC literature evidence), AND, for each target, I want to know its gene symbol, the sentence from the paper, and whether there are any drugs approved or in clinical trials that act on this target (from ChEMBL). 😮No need to ever read a paper manually again! (That’s a joke)</p>
+<div id="querying-through-the-interactive-browsers" class="section level4">
+<h4>Querying through the interactive browsers</h4>
+<p>The Platform and Genetics Portal have separate APIs. The interactive GraphQL browsers, which include autocomplete and documentation, are useful for exploring the data, getting to know the schemas, and testing out queries:</p>
+<ul>
+<li><strong>Platform Browser</strong>: <a href="https://api.platform.opentargets.org/api/v4/graphql/browser" class="uri">https://api.platform.opentargets.org/api/v4/graphql/browser</a></li>
+<li><strong>Genetics Portal Browser</strong>: <a href="http://genetics-api.opentargets.io/graphql/browser" class="uri">http://genetics-api.opentargets.io/graphql/browser</a></li>
+</ul>
+<p>I recommend reading <a href="http://blog.opentargets.org/2020/08/06/accessing-the-open-targets-genetics-using-graphql/">this previous blog post</a> for a detailed overview of how to construct GraphQL queries and use the GraphQL browser.</p>
+<p>Briefly, construct a query by including the relevant fields you want to query (e.g. <code>disease</code> to get information about a disease, or <code>target</code> for information about a target) and which of the available subfields that you’re interested in retrieving from that field (e.g. <code>name</code> or <code>associatedTargets</code>).</p>
+<p>You also need to pass your variables to the query. You can either hardcode these in the query (e.g. <code>(efoId: "EFO_0001645")</code>) or, as in the example below, declare the variable type that will be passed to the query, in this case <code>$efoId: String!</code>. We can then include the variables in the “query variables” window at the bottom of the browser.</p>
+<p>For example, say I’m interested in finding targets associated with <a href="https://platform.opentargets.org/disease/EFO_0001645/associations">Coronary Artery Disease</a>:</p>
+<p>Here’s a query that will do that, which you can execute in the interactive browser:</p>
+<pre class="bash"><code># Query
+query simpleQuery($efoId: String!){
+  ## get the disease information for the efoId passed to the query
+  disease(efoId: $efoId){
+    ## retrieve the name of the disease 
+    name
+    ## get the targets associated with the disease
+    associatedTargets{
+      ## for each associated target, get the following information
+      rows{
+        target{
+          ## ensembl ID
+          id
+          ## approved gene name
+          approvedName
+        }
+        ## the overall association score between the target and disease
+        score
+        ##  the id and score for each evidence datatype (genetic, literature, etc)
+        datatypeScores{
+          id
+          score
+        }
+      }
+    }
+  }
+}</code></pre>
+<p>In order to execute the query, include the disease we want to query in the “Query Variables” window and press the big button.</p>
+<pre class="bash"><code>{
+  &quot;efoId&quot;: &quot;EFO_0001645&quot;
+}
+</code></pre>
+<p>Here’s the first result in the output, which shows us the top hit is APOE with an overall association score of 0.71, based on evidence from literature, animal models (PhenoDigm) and genetic associations.</p>
+<pre class="bash"><code># Output
+{
+  &quot;data&quot;: {
+    &quot;disease&quot;: {
+      &quot;name&quot;: &quot;coronary artery disease&quot;,
+      &quot;associatedTargets&quot;: {
+        &quot;rows&quot;: [
+          {
+            &quot;target&quot;: {
+              &quot;id&quot;: &quot;ENSG00000130203&quot;,
+              &quot;approvedName&quot;: &quot;apolipoprotein E&quot;
+            },
+            &quot;score&quot;: 0.7126306823375346,
+            &quot;datatypeScores&quot;: [
+              {
+                &quot;id&quot;: &quot;literature&quot;,
+                &quot;score&quot;: 0.5805447784010965
+              },
+              {
+                &quot;id&quot;: &quot;animal_model&quot;,
+                &quot;score&quot;: 0.5952248820856572
+              },
+              {
+                &quot;id&quot;: &quot;genetic_association&quot;,
+                &quot;score&quot;: 0.7005460130842551
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+</code></pre>
+<p>Here’s how it looks in the interactive browser:</p>
+<div class="figure">
+<img src="images/query_screenshot.png" alt="" />
+<p class="caption">Screenshot of the query in the interactive GraphQL browser showing the query and the result</p>
+</div>
+<p>What’s great about GraphQL is that you can ask for information very flexibly. For example, if I want to know more about the targets associated with Coronary Artery Disease, I can just add more fields to the <code>target</code> query.</p>
+<p>The following query will retrieve information about the subcellular location, tractability, and protein expression levels in different tissues, for all targets associated with Coronary Artery Disease:</p>
+<pre class="bash"><code># Query with annotations
+query simpleQuery($efoId: String!){
+  disease(efoId: $efoId){
+    name
+    associatedTargets{
+      rows{
+        target{
+          id
+          approvedName
+          ## retrieve annotations for subcellular locations
+          proteinAnnotations{
+            subcellularLocations
+          }
+          ## predicted small molecule tractability
+          tractability{
+            smallmolecule{
+              topCategory
+            }
+          }
+          ## protein expression levels in different cell types
+          expressions{
+            protein{
+              cellType {
+                name
+                level
+                reliability
+              }
+            }
+          }
+        }
+        datatypeScores{
+          id
+          score
+        }
+      }
+    }
+  }
+}
+
+# Query variables
+{
+  &quot;efoId&quot;: &quot;EFO_0001645&quot;
+}</code></pre>
+<p><strong>Output:</strong></p>
+<pre class="bash"><code>{
+  &quot;data&quot;: {
+    &quot;disease&quot;: {
+      &quot;name&quot;: &quot;coronary artery disease&quot;,
+      &quot;associatedTargets&quot;: {
+        &quot;rows&quot;: [
+          {
+            &quot;target&quot;: {
+              &quot;id&quot;: &quot;ENSG00000130203&quot;,
+              &quot;approvedName&quot;: &quot;apolipoprotein E&quot;,
+              &quot;proteinAnnotations&quot;: {
+                &quot;subcellularLocations&quot;: [
+                  &quot;Secreted&quot;,
+                  &quot;Extracellular space&quot;,
+                  &quot;Extracellular matrix&quot;
+                ]
+              },
+              &quot;tractability&quot;: {
+                &quot;smallmolecule&quot;: {
+                  &quot;topCategory&quot;: &quot;Discovery_Precedence_sm&quot;
+                }
+              },
+              &quot;expressions&quot;: [
+                {
+                  &quot;protein&quot;: {
+                    &quot;cellType&quot;: [
+                      {
+                        &quot;name&quot;: &quot;adipocytes&quot;,
+                        &quot;level&quot;: 0,
+                        &quot;reliability&quot;: true
+                      }
+                    ]
+                  }
+                },
+                {
+                  &quot;protein&quot;: {
+                    &quot;cellType&quot;: [
+                      {
+                        &quot;name&quot;: &quot;glandular cells&quot;,
+                        &quot;level&quot;: 3,
+                        &quot;reliability&quot;: true
+                      }
+                    ]
+                  }
+                },
+## output truncated ##
+</code></pre>
+<p>As GraphQL queries consist of just a string, you can execute the query programmatically in whatever language you feel like.</p>
+</div>
+<div id="querying-through-the-command-line" class="section level4">
+<h4>Querying through the command line</h4>
+<p>You can execute queries on the command line using curl. For example, you can save your query and variables in separate files (e.g. <code>query.gql</code> and <code>variables.gql</code>), and use a script to perform the execution:</p>
+<p><code>./otpql.sh query.gql variables.gql &gt; output.json</code></p>
+<p>Where <code>otpql.sh</code> is a script like the following (which you should not have to modify):</p>
+<pre class="bash"><code>#!/usr/bin/env bash
+
+# Modified from MatrixManAtYrService stackoverflow answer
+# https://stackoverflow.com/questions/42021113/how-to-use-curl-to-access-the-github-graphql-api
+
+if [ ! -f $1 ]
+then
+    echo Queries the Open Target Platform GraphQL API
+    echo &quot;Usage:&quot;
+    echo
+    echo &quot;$0 somequery.gql somevariables.gql&quot;
+fi
+
+# read the gql query from the file named in the argument
+QUERY=$(jq -n \
+           --arg q &quot;$(cat $1 | tr -d &#39;\n&#39;)&quot; \
+           --arg v &quot;$(cat $2 | tr -d &#39;\n&#39;)&quot; \
+           &#39;{ query: $q, variables: $v}&#39;)
+
+# do the query
+curl -X POST \
+  -H &quot;Content-Type: application/json&quot; \
+  --data &quot;$QUERY&quot; \
+  https://api.platform.opentargets.org/api/v4/graphql
+</code></pre>
+<p>The output will be be returned as a single line in JSON format, which you can explore on the command line using a tool like <a href="https://stedolan.github.io/jq/">jq</a> (see my <a href="https://clarewest.github.io/blog/post/handling-json-data-with-jq/">previous blog post</a> for examples of how to use jq).</p>
+</div>
+<div id="querying-programmatically-using-r" class="section level4">
+<h4>Querying programmatically using R</h4>
+<p>Alternatively, you can execute queries in R using the packages <code>ghql</code> for handling the GraphQL queries, and <code>jsonlite</code> to process the JSON output.</p>
+<pre class="r"><code>library(dplyr)
+library(ghql)
+library(jsonlite)
+
+## Set up to query Open Targets Platform API
+otp_cli &lt;- GraphqlClient$new(url = &#39;https://api.platform.opentargets.org/api/v4/graphql&#39;)
+otp_qry &lt;- Query$new()
+
+## Query for targets associated with a disease
+otp_qry$query(&#39;simple_query&#39;, &#39;query simpleQuery($efoId: String!){
+  disease(efoId: $efoId){
+    name
+    associatedTargets{
+      rows{
+        target{
+          id
+          approvedName
+        }
+        score
+        datatypeScores{
+          id
+          score
+        }
+      }
+    }
+  }
+}&#39;
+)
+
+## Execute the query
+variables &lt;- list(efoId = &#39;EFO_0001645&#39;)
+result &lt;- fromJSON(otp_cli$exec(otp_qry$queries$simple_query, variables, flatten = TRUE))$data$disease</code></pre>
+<p>Note that the output will be nested, so you may want to reshape the data a bit:</p>
+<pre class="r"><code>top_targets &lt;- 
+  as.data.frame(result$associatedTargets$rows) %&gt;% 
+  flatten() %&gt;% 
+  rename(overallScore = score) %&gt;% 
+  tidyr::unnest(datatypeScores) %&gt;% 
+  tidyr::pivot_wider(names_from = &quot;id&quot;, values_from = &quot;score&quot;)</code></pre>
+<pre><code>## # A tibble: 25 x 7
+##    overallScore target.id    target.approvedName         literature animal_model
+##           &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                            &lt;dbl&gt;        &lt;dbl&gt;
+##  1        0.757 ENSG0000013… apolipoprotein E                0.973         0.538
+##  2        0.750 ENSG0000007… LDL receptor related prote…     0.580         0.492
+##  3        0.731 ENSG0000006… guanylate cyclase 1 solubl…     0.0380       NA    
+##  4        0.722 ENSG0000016… proprotein convertase subt…     0.967         0.327
+##  5        0.684 ENSG0000012… plasminogen                     0.430        NA    
+##  6        0.681 ENSG0000017… phosphodiesterase 3A            0.0525       NA    
+##  7        0.642 ENSG0000011… 3-hydroxy-3-methylglutaryl…     0.840        NA    
+##  8        0.629 ENSG0000015… angiotensin I converting e…     0.940        NA    
+##  9        0.627 ENSG0000018… NADH:ubiquinone oxidoreduc…    NA            NA    
+## 10        0.617 ENSG0000007… prostaglandin-endoperoxide…     0.359        NA    
+## # … with 15 more rows, and 2 more variables: genetic_association &lt;dbl&gt;,
+## #   known_drug &lt;dbl&gt;</code></pre>
+</div>
+<div id="what-kind-of-information-can-i-get-from-the-platform-and-the-genetics-portal" class="section level4">
+<h4>What kind of information can I get from the Platform and the Genetics Portal?</h4>
+<p>In Part 2 of this blog post series, I’ll go into more detail about the data available and give some particular examples of how you can explore the genetic evidence linking targets and diseases.</p>
+</div>
+<div id="what-if-i-want-to-know-everything" class="section level4">
+<h4>What if I want to know EVERYthing?</h4>
+<p>If you’re interested in querying more than a few targets or diseases, or if you want to use the full range of data and annotations Open Targets has to offer, it’s time to think about using the data downloads: see Part 3 for examples of how you can efficiently query a local copy of Open Targets.</p>
+</div>
+<div id="post-script" class="section level4">
+<h4>Post-script</h4>
+<p>Oh, and that query I promised would save you having to read papers?</p>
+<pre class="bash"><code>query literatureDrugQuery($efoId: String!) {
+  disease(efoId: $efoId) {
+    name
+    associatedTargets(
+      aggregationFilters: [{ name: &quot;dataTypes&quot;, path: &quot;literature&quot; }]
+    ) {
+      rows {
+        score
+        target {
+          id
+          approvedSymbol
+          evidences (
+            efoIds: [$efoId]
+            datasourceIds: [&quot;europepmc&quot;]
+          ){
+            count
+            rows {
+              textMiningSentences {
+                text
+              }
+            }
+          }
+                    knownDrugs {
+            uniqueDrugs
+            rows {
+              drug {
+                id
+                name
+                maximumClinicalTrialPhase
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+</div>
+</div>
+</div>

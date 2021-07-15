@@ -1,0 +1,300 @@
+---
+title: 'Crash Course in Open Targets Part 2: Genetics Deep Dive'
+author: CE West
+date: '2021-07-22'
+slug: crash-course-in-open-targets-part-2
+categories:
+  - science
+  - R
+tags:
+  - bioinformatics
+  - genetics
+meta_img: images/image.png
+cardtype: summary
+description: A deeper look at exploring genetic evidence in Open Targets Genetics Portal
+draft: true 
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>In Part 1 of this crash course, we learnt how to browse and access data in Open Targets through the web interface, the GraphQL APIs, and the data downloads. In Part 2, I’ll go into more detail about the kind of data that’s available, and demonstrate how you might explore the genetic evidence linking targets and diseases.</p>
+<!--more-->
+<div id="querying-evidence-for-target-disease-associations" class="section level4">
+<h4>Querying evidence for target-disease associations</h4>
+<p>In one of the Part 1 examples, I demonstrated how to retrieve the top 5 targets associated with Coronary Artery Disease using R:</p>
+<pre class="r"><code>library(dplyr)
+library(ghql)
+library(jsonlite)
+
+## Set up to query Open Targets Platform API
+otp_cli &lt;- GraphqlClient$new(url = &#39;https://api.platform.opentargets.org/api/v4/graphql&#39;)
+otp_qry &lt;- Query$new()
+
+## Query for targets associated with a disease
+otp_qry$query(&#39;simple_query&#39;, &#39;query simpleQuery($efoId: String!){
+  disease(efoId: $efoId){
+    name
+    associatedTargets{
+      rows{
+        target{
+          id
+          approvedName
+        }
+        datatypeScores{
+          id
+          score
+        }
+      }
+    }
+  }
+}&#39;
+)
+
+## Execute the query
+variables &lt;- list(efoId = &#39;EFO_0001645&#39;)
+result &lt;- fromJSON(otp_cli$exec(otp_qry$queries$simple_query, variables, flatten = TRUE))$data$disease
+
+top_targets &lt;- 
+  as.data.frame(result$associatedTargets$rows) %&gt;% 
+  flatten() %&gt;% 
+  tidyr::unnest(datatypeScores) %&gt;% 
+  tidyr::pivot_wider(names_from = &quot;id&quot;, values_from = &quot;score&quot;)
+
+head(top_targets, 5)</code></pre>
+<pre><code>## # A tibble: 5 x 6
+##   target.id target.approved… literature animal_model genetic_associa… known_drug
+##   &lt;chr&gt;     &lt;chr&gt;                 &lt;dbl&gt;        &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;
+## 1 ENSG0000… apolipoprotein E     0.973         0.538            0.903     NA    
+## 2 ENSG0000… LDL receptor re…     0.580         0.492            0.899     NA    
+## 3 ENSG0000… guanylate cycla…     0.0380       NA                0.815      0.997
+## 4 ENSG0000… proprotein conv…     0.967         0.327            0.779      0.968
+## 5 ENSG0000… plasminogen          0.430        NA                0.725      0.934</code></pre>
+<p>Let’s take a deeper look at the evidence supporting these associations. There are many fields available in the evidence entity, representing the many different sources of evidence that can contribute to an association in Open Targets.</p>
+<p>In this example, let’s look at the GWAS evidence linking these top 5 targets to Coronary Artery Disease.</p>
+<ul>
+<li><p><code>datasourceIds: ["ot_genetics_portal"]</code> restricts the query to evidence from Open Targets Genetics Portal.</p></li>
+<li><p>The field <code>diseaseFromSource</code> will tell me the actual trait of the GWAS study, while <code>disease.id</code> and <code>disease.name</code> represent the EFO term to which this has been mapped. By default, evidence linked to descendant terms of my EFO query term is included in associations - this is known as ‘indirect evidence’, and you can <a href="http://blog.opentargets.org/2017/04/25/direct-versus-indirect-evidence-should-you-care/">read more about whether you should care about this here</a>. In this example, GWAS evidence for descendant terms such as “Coronary atherosclerosis” have been included in the output of my search for “Coronary artery disease”.</p></li>
+<li><p><code>score</code> is the resource score - in this case, it’s the <a href="https://genetics-docs.opentargets.org/our-approach/prioritising-causal-genes-at-gwas-loci-l2g">locus-to-gene score</a> from the genetics portal, which represents the confidence that this trait-associated locus is linked to this target/gene.</p></li>
+<li><p>The other fields I’ve included here are the GWAS study ID and the year it was published, the effect size (beta or odds ratio) the lead variant IDs, and the <a href="https://www.ensembl.org/info/docs/tools/vep/index.html">predicted functional consequence</a> of the variant</p></li>
+</ul>
+<pre class="r"><code>## Query for genetic evidence
+otp_qry$query(
+    &#39;genetic_evidence_query&#39;,
+    &#39;query geneticEvidenceQuery($efoId: String!, $ensemblIds: [String!]!){
+  disease(efoId: $efoId){
+    evidences(ensemblIds: $ensemblIds,
+    datasourceIds: [&quot;ot_genetics_portal&quot;])
+    {
+      rows{
+        target{
+          id
+          approvedSymbol
+        }
+        disease{
+          id
+          name
+        }
+        score
+        diseaseFromSource
+        studyId
+        publicationYear
+        oddsRatio
+        beta
+        variantId
+        variantRsId
+        variantFunctionalConsequence{
+          label
+        }
+      }
+    }
+  }
+}
+&#39;)
+
+## Execute the query
+variables &lt;-
+    list(efoId = &#39;EFO_0001645&#39;,
+         ensemblIds = head(top_targets, 5)$target.id)
+result &lt;-
+    fromJSON(otp_cli$exec(otp_qry$queries$genetic_evidence_query, variables, flatten = TRUE))$data
+
+top5_evidence &lt;-
+    as.data.frame(result$disease$evidences$rows) %&gt;% flatten()</code></pre>
+<p>As an example, let’s look at the first piece of evidence, which shows that a 2018 GWAS study found a G to T missense variant in the gene for PCSK9 on chromosome 1 to be associated with an increased risk of coronary atherosclerosis (OR 0.75).</p>
+<pre class="r"><code>head(top5_evidence,1) %&gt;% as.list()</code></pre>
+<pre><code>## $score
+## [1] 0.8562918
+## 
+## $diseaseFromSource
+## [1] &quot;Coronary artery disease&quot;
+## 
+## $studyId
+## [1] &quot;GCST010867&quot;
+## 
+## $publicationYear
+## [1] 2020
+## 
+## $oddsRatio
+## [1] NA
+## 
+## $beta
+## [1] NA
+## 
+## $variantId
+## [1] &quot;4_155764503_T_C&quot;
+## 
+## $variantRsId
+## [1] &quot;rs3796562&quot;
+## 
+## $target.id
+## [1] &quot;ENSG00000061918&quot;
+## 
+## $target.approvedSymbol
+## [1] &quot;GUCY1B1&quot;
+## 
+## $disease.id
+## [1] &quot;EFO_0001645&quot;
+## 
+## $disease.name
+## [1] &quot;coronary artery disease&quot;
+## 
+## $variantFunctionalConsequence.label
+## [1] &quot;intron_variant&quot;</code></pre>
+</div>
+<div id="open-targets-genetics-portal" class="section level3">
+<h3>Open Targets Genetics Portal</h3>
+<p>Once you’re delving deep enough into GWAS evidence, you might want to make the jump to the Genetics Portal. The Portal also has a GraphQL API, but the data is structured around variant, study, and gene entities. Unlike the Platform, where evidence for the same disease is grouped together, GWAS studies are kept separate.</p>
+<p>The following query will get more information about the GWAS evidence above linking PCSK9 to coronary artery disease. Firstly, it retrieves details about the sample size, ancestry, and total number of associated loci from the GWAS study. It also retrieves all other possible gene mappings for the locus, including the locus-to-gene score, the distance to the gene, and whether there is molecular trait colocalisation linking this locus to the gene. In this case, the locus-to-gene scores are very low for genes other than PCSK9 (only locus-to-gene scores greater than 0.05 will be used as evidence in the Platform):</p>
+<pre class="r"><code>## Set up to query Open Targets Genetics API
+otg_cli &lt;- GraphqlClient$new(url = &quot;https://genetics-api.opentargets.io/graphql&quot;)
+otg_qry &lt;- Query$new()
+
+## Query for GWAS study locus details
+otg_qry$query(&#39;l2g_query&#39;, &#39;query l2gQuery($studyId: String!, $variantId: String!){
+    studyInfo(studyId: $studyId){
+    numAssocLoci
+    ancestryInitial
+    nTotal
+    nCases
+    pubAuthor
+  }
+  studyLocus2GeneTable(studyId: $studyId, variantId: $variantId){
+    rows {
+      gene {
+        id
+        symbol
+      }
+      hasColoc
+      yProbaModel
+      distanceToLocus
+    }
+  }
+}&#39;)
+
+## Execute the query 
+variables &lt;- list(studyId = head(top5_evidence,1)$studyId, variantId = head(top5_evidence,1)$variantId)
+result &lt;- fromJSON(otg_cli$exec(otg_qry$queries$l2g_query, variables, flatten = TRUE))$data</code></pre>
+<pre class="r"><code>result$studyInfo</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>result$studyLocus2GeneTable</code></pre>
+<pre><code>## $rows
+## list()</code></pre>
+<div id="lead-and-tag-variants" class="section level4">
+<h4>Lead and tag variants</h4>
+<p>Time for a quick genetics refresher…</p>
+<p>The lead variant reported for a GWAS association is usually the SNP with the smallest p-value at the locus (i.e the most significant SNP), <strong>but this is not necessarily the causal variant</strong>. This is important when investigating individual genetic associations and making comparisons across studies. The causal variant may be a nearby less-significant SNP, or may be an unmeasured SNP that correlates with the lead SNP but was not included in the GWAS microarray.</p>
+<p>SNPs are correlated if they are inherited together more frequently than would be expected by chance, known as Linkage Disequilibrium (LD). The extent of LD between SNPs depends on the distance between them, how often recombination occurs in the genomic region, as well as population structure. In regions where large genomic units are frequently inherited together in the study population, there can be a large number of possible causal variants that are difficult to disentangle. Authors are increasingly encouraged to deposit full summary statistics - which include p-values and effect sizes for all SNPs measured in the GWAS study - but for many older studies only the lead variant information is available.</p>
+<p>In Open Targets Genetics, the <a href="https://genetics-docs.opentargets.org/our-approach/assigning-traits-to-loci">lead variants are expanded into a more comprehensive set of candidate causal variants referred to as the <em>tag variants</em></a>. For studies where summary statistics are available, fine-mapping is used to identify a credible set of possible causal variants based on the GWAS results. Where summary statistics are not available, tag variants include those that are highly correlated (r<sup>2</sup>&gt;0.7) with the lead variants; LD information is calculated from a reference population that most closely matches the study population’s ancestry.</p>
+<div id="so-what" class="section level5">
+<h5>So what?</h5>
+<p>So, there’s more to GWAS than lead variants!</p>
+<p>The following query retrieves the credible set of variants for one of the GWAS associations linking APOE to Coronary Artery Disease (in this case, there are three variants):</p>
+<pre class="r"><code>## Query for GWAS study locus details
+otg_qry$query(&#39;credset_query&#39;, &#39;query credsetQuery($studyId: String!, $variantId: String!){
+  gwasCredibleSet(studyId: $studyId, variantId: $variantId) {
+    tagVariant {
+      id
+    }
+    beta
+    postProb
+    pval
+  }
+}&#39;)
+
+## Execute the query 
+variables &lt;- list(studyId = &quot;NEALE2_20002_1223&quot;, variantId = &quot;10_112995025_T_C&quot;)
+result &lt;- fromJSON(otg_cli$exec(otg_qry$queries$credset_query, variables, flatten = TRUE))$data
+
+result$gwasCredibleSet</code></pre>
+<pre><code>##                 id      beta  postProb        pval
+## 1 10_112994312_T_C 0.3672470 0.3182122 2.15785e-29
+## 2 10_112995025_T_C 0.3674516 0.3689395 1.85011e-29
+## 3 10_112998590_C_T 0.3668649 0.3124097 2.19447e-29</code></pre>
+</div>
+</div>
+<div id="querying-colocalisation-information" class="section level4">
+<h4>Querying colocalisation information</h4>
+<p><a href="https://genetics-docs.opentargets.org/our-approach/colocalisation-analysis">Colocalisation analysis</a> is performed between all studies in the Portal with at least one overlapping associated locus. This analysis tests whether two independent associations at the same locus are consistent with having a shared causal variant. Colocalisation of two independent associations from two GWAS studies may suggest a shared causal mechanism. Colocalisation of a locus associated with a trait (through a GWAS) and with protein levels (through a pQTL study) may suggest a link between the protein and the trait.</p>
+<p>For example, for the top 5 targets linked to Coronary Artery Disease that I retrieved earlier from the Platform, I can see whether there is evidence of colocalisation with loci associated with a change in protein or expression levels. This query will retrieve the lead variant, effect size, tissue, and study ID for QTL studies for which there is evidence of colocalisation:</p>
+<pre class="r"><code>## Query for QTL colocalisation
+otg_qry$query(
+  &#39;qtl_query&#39;,
+  &#39;query qtlColocalisationVariantQuery($studyId: String!, $variantId: String!) {
+  qtlColocalisation(studyId: $studyId, variantId: $variantId){
+    qtlStudyName
+    phenotypeId
+    gene {
+      id
+      symbol
+    }
+    tissue {
+      name
+    }
+    indexVariant {
+      id
+    }
+    beta
+    h4
+  }
+}&#39;
+)
+
+fetch_qtl &lt;- function(current_studyId, current_variantId) {
+  variables = list(studyId = current_studyId, variantId = current_variantId)
+  result &lt;-
+    fromJSON(otg_cli$exec(otg_qry$queries$qtl_query, variables, flatten = TRUE))$data
+  l2g_result &lt;- result$qtlColocalisation
+  return(l2g_result)
+}
+
+variants &lt;- top5_evidence %&gt;%
+  select(studyId, variantId) %&gt;%
+  unique()
+
+variants_qtl &lt;-
+  variants %&gt;%
+  rowwise() %&gt;%
+  mutate(qtl = list(fetch_qtl(studyId, variantId))) %&gt;%
+  tidyr::unnest(qtl) %&gt;%
+  select(-qtl) %&gt;%
+  flatten()</code></pre>
+<pre><code>##      studyId       variantId qtlStudyName     phenotypeId      beta        h4
+## 1 GCST005194 19_44908822_C_T      SUN2018  APOE_5312_49_3 -0.339200 0.9999775
+## 2 GCST005194 19_44908822_C_T      SUN2018  APOE_2937_10_2 -0.721100 0.9999839
+## 3 GCST005194 19_44908822_C_T      GTEX_v7 ENSG00000159917 -0.442927 0.7260608
+## 4  SAIGE_411 19_44908822_C_T      SUN2018  APOE_5312_49_3 -0.339200 0.9999935
+## 5  SAIGE_411 19_44908822_C_T      SUN2018  APOE_2937_10_2 -0.721100 0.9999999
+##           gene.id gene.symbol  tissue.name indexVariant.id
+## 1 ENSG00000130203        APOE Blood plasma 19_44909976_G_T
+## 2 ENSG00000130203        APOE Blood plasma 19_44909976_G_T
+## 3 ENSG00000159917      ZNF235    Pituitary 19_44921921_G_A
+## 4 ENSG00000130203        APOE Blood plasma 19_44909976_G_T
+## 5 ENSG00000130203        APOE Blood plasma 19_44909976_G_T</code></pre>
+</div>
+<div id="wow-what-else-is-there" class="section level4">
+<h4>Wow, what else is there?</h4>
+<p>The Genetics Portal not only aggregates GWAS study data in one place, but performs a number of analyses that can help make sense of the vast genetic data available. In this blog post I’ve demonstrated a few ways this information can be used alongside the Genetics Platform to find and explore genetic links between targets and diseases, but this really just scratches the surface. Find out more about the Genetics Portal in the <a href="https://genetics-docs.opentargets.org/">documentation</a> and the <a href="https://community.opentargets.org/">Open Targets Community</a>.</p>
+<p>In the next and final part of this blog series, we’ll delve into how you can bypass the APIs completely and get straight to the good stuff with the data downloads.</p>
+</div>
+</div>
