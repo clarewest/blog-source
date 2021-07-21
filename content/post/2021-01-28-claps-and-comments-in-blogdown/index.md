@@ -9,7 +9,7 @@ tags:
   - html
   - utterances
 meta_img: images/comments_and_claps.png
-cardtype: twitter-summary-large
+cardtype: summary_large_image
 description: How to include an applause button, comments, and social media sharing links on your blogdown website 
 ---
 
@@ -106,7 +106,7 @@ Then insert the element wherever you want:
 ```
 
 <div class="container">
-<applause-button style="width: 58px; height: 58px;"/>
+<applause-button style="width: 58px; height: 58px;" url="https://clarewest.github.io/blog/post/claps-and-comments-in-blogdown/"/>
 </div>
 
 It seems super easy, but I had a couple of problems that left me a bit perplexed (okay fine, I sulked and ate half a toblerone).

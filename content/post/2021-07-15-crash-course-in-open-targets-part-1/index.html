@@ -9,7 +9,7 @@ categories:
 tags:
   - bioinformatics
   - genetics
-meta_img: images/query_screenshot.png
+meta_img: images/Summer-School-in-Open-Targets-Part-1-Blog-Header-Image.jpeg
 cardtype: summary_large_image
 description: Overview of using Open Targets to identify potential drug targets.
 ---
@@ -19,6 +19,7 @@ description: Overview of using Open Targets to identify potential drug targets.
 
 <p>Open Targets is a public-private partnership for systematic identification, prioritisation, and validation of drug targets. In this three-part blog post series, I will give an overview of Open Targets, the data available, and how to access it through the web interface, programmatically through the APIs, and using the data downloads.</p>
 <!--more-->
+<p>Open Targets is a public-private partnership for systematic identification, prioritisation, and validation of drug targets. In this three-part blog post series, I will give an overview of Open Targets, the data available, and how to access it through the web interface, programmatically through the APIs, and using the data downloads.</p>
 <p>As a postdoc at the <a href="https://www.cmd.ox.ac.uk/">Centre for Medicines Discovery</a> (University of Oxford) and <a href="https://www.kespine.org.uk/">UK SPINE</a>, I was working with Open Targets to identify potential drug development opportunities for age-related multimorbidities. We were interested in finding genes associated with a number of age-related diseases, dissecting the genetic evidence for those relationships, and assessing the novelty and tractability of these targets as potential drug targets. Luckily for me, the team at Open Targets have already spent several years thinking about exactly these problems. In these blog posts, I will try to distil everything I learnt during these months of privileged insider access to the Open Targets slack channels about how to use their platform and how to scale up as my queries got more and more demanding.</p>
 <div id="overview" class="section level3">
 <h3>Overview</h3>
@@ -59,7 +60,7 @@ description: Overview of using Open Targets to identify potential drug targets.
 <p>The Platform and Genetics Portal have separate APIs. The interactive GraphQL browsers, which include autocomplete and documentation, are useful for exploring the data, getting to know the schemas, and testing out queries:</p>
 <ul>
 <li><strong>Platform Browser</strong>: <a href="https://api.platform.opentargets.org/api/v4/graphql/browser" class="uri">https://api.platform.opentargets.org/api/v4/graphql/browser</a></li>
-<li><strong>Genetics Portal Browser</strong>: <a href="http://genetics-api.opentargets.io/graphql/browser" class="uri">http://genetics-api.opentargets.io/graphql/browser</a></li>
+<li><strong>Genetics Portal Browser</strong>: <a href="https://api.genetics.opentargets.org/graphql/browser" class="uri">https://api.genetics.opentargets.org/graphql/browser</a></li>
 </ul>
 <p>I recommend reading <a href="http://blog.opentargets.org/2020/08/06/accessing-the-open-targets-genetics-using-graphql/">this previous blog post</a> for a detailed overview of how to construct GraphQL queries and use the GraphQL browser.</p>
 <p>Briefly, construct a query by including the relevant fields you want to query (e.g. <code>disease</code> to get information about a disease, or <code>target</code> for information about a target) and which of the available subfields that you’re interested in retrieving from that field (e.g. <code>name</code> or <code>associatedTargets</code>).</p>
@@ -308,20 +309,20 @@ result &lt;- fromJSON(otp_cli$exec(otp_qry$queries$simple_query, variables, flat
   tidyr::unnest(datatypeScores) %&gt;% 
   tidyr::pivot_wider(names_from = &quot;id&quot;, values_from = &quot;score&quot;)</code></pre>
 <pre><code>## # A tibble: 25 x 7
-##    overallScore target.id    target.approvedName         literature animal_model
-##           &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                            &lt;dbl&gt;        &lt;dbl&gt;
-##  1        0.757 ENSG0000013… apolipoprotein E                0.973         0.538
-##  2        0.750 ENSG0000007… LDL receptor related prote…     0.580         0.492
-##  3        0.731 ENSG0000006… guanylate cyclase 1 solubl…     0.0380       NA    
-##  4        0.722 ENSG0000016… proprotein convertase subt…     0.967         0.327
-##  5        0.684 ENSG0000012… plasminogen                     0.430        NA    
-##  6        0.681 ENSG0000017… phosphodiesterase 3A            0.0525       NA    
-##  7        0.642 ENSG0000011… 3-hydroxy-3-methylglutaryl…     0.840        NA    
-##  8        0.629 ENSG0000015… angiotensin I converting e…     0.940        NA    
-##  9        0.627 ENSG0000018… NADH:ubiquinone oxidoreduc…    NA            NA    
-## 10        0.617 ENSG0000007… prostaglandin-endoperoxide…     0.359        NA    
+##    overallScore target.id    target.approvedName           known_drug literature
+##           &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                              &lt;dbl&gt;      &lt;dbl&gt;
+##  1        0.723 ENSG0000006… guanylate cyclase 1 soluble …      0.995     0.0304
+##  2        0.717 ENSG0000013… apolipoprotein E                  NA         0.948 
+##  3        0.699 ENSG0000016… proprotein convertase subtil…      0.937     0.937 
+##  4        0.693 ENSG0000007… LDL receptor related protein…     NA         0.518 
+##  5        0.668 ENSG0000017… phosphodiesterase 3A               0.970     0.0469
+##  6        0.637 ENSG0000011… 3-hydroxy-3-methylglutaryl-C…      0.998     0.734 
+##  7        0.636 ENSG0000012… plasminogen                        0.878     0.382 
+##  8        0.619 ENSG0000015… angiotensin I converting enz…      0.974     0.892 
+##  9        0.615 ENSG0000016… purinergic receptor P2Y12          0.998     0.264 
+## 10        0.614 ENSG0000007… prostaglandin-endoperoxide s…      0.992     0.348 
 ## # … with 15 more rows, and 2 more variables: genetic_association &lt;dbl&gt;,
-## #   known_drug &lt;dbl&gt;</code></pre>
+## #   animal_model &lt;dbl&gt;</code></pre>
 </div>
 <div id="what-kind-of-information-can-i-get-from-the-platform-and-the-genetics-portal" class="section level4">
 <h4>What kind of information can I get from the Platform and the Genetics Portal?</h4>

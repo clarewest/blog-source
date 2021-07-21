@@ -16,7 +16,9 @@ meta_img: images/hex_wall.png
 
 ---
 
-rstudio's annual conference went online and global this year, which meant that I could attend for the first time. There were lots of interesting talks, and it was great to see familiar faces from GitHub/Twitter avatars come to life! This is a summary of the notes I took during the talks I attended, I will add links to the full talks on the rstudio website when they become available.
+[rstudio's annual conference](https://rstudio.com/resources/rstudioglobal-2021/) went online and global this year, which meant that I could attend for the first time. There were lots of interesting talks, and it was great to see familiar faces from GitHub/Twitter avatars come to life! This is a summary of the notes I took during the talks I attended, including <a href="https://rstudio.com/resources/rstudioglobal-2021/" title="Full talks"><i class="fa fa-video-camera"></i></a> links to watch the full talk where available; to see all the available talk videos visit the [rstudio website](https://rstudio.com/resources/rstudioglobal-2021/).
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -40,7 +42,7 @@ render_toc("index.Rmd")
 ```
 
 ### Speeding up Shiny, *Pedro Silva* {#speeding-up-shiny}
-*Use update functions for faster Shiny apps*
+*Use update functions for faster Shiny apps* 
 
 [Update functions](https://mastering-shiny.org/action-dynamic.html) speed up Shiny apps by telling the browser to update an existing element, rather than replacing it completely. Shiny inputs each have a corresponding update function, and just this small change in the code can achieve large speed improvements per element (e.g. from ~15ms to ~10ms for the example below). For more complicated widgets such as `DT::datatable`, proxy functions should be used instead. 
 
@@ -97,7 +99,7 @@ Extra: I also saw this great tip on Damian's Twitter:
 <blockquote class="twitter-tweet tw-align-center"><p lang="en" dir="ltr">Tired of working in shiny and rerunning the app every time you do a change? Checkout options(shiny.autoreload = TRUE)</p>&mdash; Damian Rodziewicz (@D_Rodziewicz) <a href="https://twitter.com/D_Rodziewicz/status/1336582721934684160?ref_src=twsrc%5Etfw">December 9, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ### Maintaining the house the tidyverse built, *Hadley Wickham* {#maintaining-the-tidyverse}
-*The tidyverse life cycle and how to not have your code broken by updates*
+<a href="https://rstudio.com/resources/rstudioglobal-2021/maintaining-the-house-the-tidyverse-built/" title="Full talk"><i class="fa fa-video-camera"></i></a> *The tidyverse life cycle and how to not have your code broken by updates*
 
 Tidyverse updates bring improvements, new features and bug fixes, but sometimes they can introduce problems with existing R code. Hadley Wickham gave an overview of the Tidyverse life cycle, which tries to mitigate these problems. These are labels that indicate the stages of development, and can apply to functions, packages, arguments, and specific values of arguments.
 
@@ -154,7 +156,7 @@ Maintain laser focus on one thing at a time, because the cost of context-switchi
 
 
 ### Always look on the bright side of plots, *Kara Woo* {#ggplot-misunderstandings}
-*Common misunderstandings/errors with ggplot*
+<a href="https://rstudio.com/resources/rstudioglobal-2021/always-look-on-the-bright-side-of-plots/" title="Full talk"><i class="fa fa-video-camera"></i></a> *Common misunderstandings/errors with ggplot*
 
 Scale transformation happens before statistical summaries. When using `scale_x_continuous(limits = c(min, max))` the points outside the limits are converted to `NA` before the statistical summaries are calculated. Instead, use `coord_cartesian(xlim =c(min, max))` to zoom in on the plot, and the points outside will still be included in the statistical summaries.
 <img src=""> 
@@ -168,14 +170,14 @@ Scale transformation happens before statistical summaries. When using `scale_x_c
 </div>
 
 ### Trial and error in data viz at the ACLU, *Sophie Beiers* {#trial-and-error-dataviz-at-ACLU}
-*Sophie Beiers, a data journalist at the ACLU, described how the process of data analysis to visualisation is not linear or simple*
+<a href="https://rstudio.com/resources/rstudioglobal-2021/trial-and-error-in-data-viz-at-the-aclu/" title="Full talk"><i class="fa fa-video-camera"></i></a> *Sophie Beiers, a data journalist at the ACLU, described how the process of data analysis to visualisation is not linear or simple*
 
 As a case study, she talked us through one of her visualisation projects from 2020, visualising the data that showed there was no relationship between the reduction in jail populations in response to the COVID-19 pandemic, and the amount of crime in the jail's surrounding area. 
 
 The first step is gathering and exploring the data. Sophie uses `tidyverse`, `janitor` (for tables) and `ggplot2` for exploration. Next, what are the main points you want to visualise, and does your visualisation highlight your main points? Consider the audience - do they know about the topic already? When getting feedback, be specific about the main points and ask whether these points are coming through. Feedback from different audiences may conflict - it's important to get feedback from the intended audience of the visualisation. While feedback can be hard to receive, it's our job to make sure people can understand our plots. If it's not working, it's important to ask why - it might be surprising. 
 
 ### SQL & R: The dynamic duo, *Irene Steves* {#sql-and-r}
-*Irene Steves shared a useful summary of the equivalent tidyverse functions and SQL commands* 
+<a href="https://rstudio.com/resources/rstudioglobal-2021/the-dynamic-duo-sql-and-r/" title="Full talk"><i class="fa fa-video-camera"></i></a> *Irene Steves shared a useful summary of the equivalent tidyverse functions and SQL commands* 
 
 How to decide which IDE to use? RStudio is useful for R formatting, suggestions, highlighting, visualisations and reporting, project organisation and version control. A dedicated SQL IDE provides auto-formatting and syntax highlighting for SQL, code/field suggestions, and makes it easy to stop bad queries. 
 
@@ -189,7 +191,7 @@ How to decide which IDE to use? RStudio is useful for R formatting, suggestions,
 
 
 ### Reporting on and visualising the pandemic, *John Burn-Murdoch* {#visualising-the-pandemic}
-*John shared the lessons he has learnt from a year of covering the pandemic*
+<a href="https://rstudio.com/resources/rstudioglobal-2021/reporting-on-and-visualising-the-pandemic/" title="Full talk"><i class="fa fa-video-camera"></i></a> *John shared the lessons he has learnt from a year of covering the pandemic*
 
 I was really excited about John Burn-Murdoch's keynote, as I've been following his team's visual coverage of the pandemic in the Financial Times (as has the rest of the world). If you haven't already, I really recommend taking a look at their visual piece ["Covid-19: The global crisis - in data"](https://ig.ft.com/coronavirus-global-data/). 
 
@@ -220,11 +222,12 @@ The FT now recruit people from a broad range of quantitative backgrounds, and th
 John gets inspiration for visualisations by consuming as broadly as possible, including dataviz books, and especially twitter to see what people are finding interesting. 
 
 ### What's new in tidymodels, *Max Kuhn* {#whats-new-in-tidymodels}
-*New methods for parameter optimisation*
+<a href="https://rstudio.com/resources/rstudioglobal-2021/whats-new-in-tidymodels/" title="Full talk"><i class="fa fa-video-camera"></i></a> *New methods for parameter optimisation*
 
 There have been new updates to [`tidymodels`](https://www.tidymodels.org/) over the past six months, including two new ways of finding optimal values for parameters that cannot be directly calculated from the data. Using the `finetune` package, the parameters can be optimised using a racing approach (which uses interim analyses to eliminate candidate parameters that have a low probability of being the best) or simulated annealing (a biased random walk around the tuning parameter space, in which steps that worsen the model results are accepted with a probability that decreases as the search continues).
 
 ### Making Shiny apps faster with caching, *Winston Chang* {#making-shiny-apps-faster-with-caching}
+<a href="https://rstudio.com/resources/rstudioglobal-2021/making-shiny-apps-faster-with-caching/" title="Full talk"><i class="fa fa-video-camera"></i></a> *Use bindCache() to speed up your apps*
 Shiny 1.6.0 has a new function, [`bindCache()`](https://rdrr.io/github/rstudio/shiny/man/bindCache.html), that makes it easy to dramatically speed up reactive expressions and output rendering functions. It allows many applications to scale up to serve several times more users without an increase in server resources. 
 
 <div class="figure">
@@ -235,9 +238,11 @@ Shiny 1.6.0 has a new function, [`bindCache()`](https://rdrr.io/github/rstudio/s
 </div>
 
 ### Easy larger-than-RAM data manipulation with disk.frame, *ZJ* {#disk-frame}
+<a href="https://rstudio.com/resources/rstudioglobal-2021/easy-larger-than-ram-data-manipulation-with-diskframe/" title="Full talk"><i class="fa fa-video-camera"></i></a> *disk.frame chunks large datasets into manageable fst files*
 The [`disk.frame`](https://github.com/xiaodaigh/disk.frame) package provides a framework for manipulating datatables that are larger than RAM and can't be held in memory at once. Instead of reading the entire large dataset into memory, `disk.frame` breaks it into smaller 'chunks' stored as [`fst`](https://fstpackage.org) files. Manipulations can then be performed on each individual chunk in parallel, and `disk.frame` supports most `dplyr` verbs.
 
 ### Your public garden, *Vicki Boykis* {#your-public-garden}
+<a href="https://rstudio.com/resources/rstudioglobal-2021/your-public-garden/" title="Full talk"><i class="fa fa-video-camera"></i></a>  *Why you should cultivate your own online space*
 [Vicki Boykis](https://twitter.com/vboykis) is a machine learning engineer at Automattic, author of the newsletter [Normcore Tech](https://vicki.substack.com/), and one of the most valuable tweeters on my timeline. In her keynote, Vicki shared her experience on the importance of cultivating your own digital space online. I didn't make any notes for this talk (too busy internalising!) but [her slides and notes are available here](https://docs.google.com/presentation/d/1RZqE43Y3fWEExGwL3jAZD7uQPDUnt53UZj0GgWo6RtQ/edit#slide=id.g6fe1a5a715_4_4744), and I really recommend listening to the full talk. 
 
 

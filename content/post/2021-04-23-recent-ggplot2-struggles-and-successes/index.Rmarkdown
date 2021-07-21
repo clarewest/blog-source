@@ -1,0 +1,38 @@
+---
+title: Recent ggplot2 struggles and successes
+author: CE West
+date: '2021-04-23'
+slug: recent-ggplot2-struggles-and-successes
+categories:
+  - R
+  - plotting
+tags:
+  - dataviz
+  - ggplot2
+meta_img: images/image.png
+description: Description for the page
+draft: true
+---
+
+In my ggplot2 experience, when you want to achieve something new and ambitious with your visualisation there are three main outcomes:
+
+1. You spiral down Stack Overflow rabbitholes, comb through documentation, stumble upon the perfect blogpost (if you're lucky), and finally manage to get what you want. 
+2. You realise what you wanted to do was stupid.
+3. Very, very rarely, you discover you have reached the limits of ggplot2 functionality. Congratulations, you're on your own now. 
+
+I'm a facet fan, I make no secret of that. 
+
+This problem really highlights the different personalities of the two ggplot2 facet functions: `facet_grid` and `facet_wrap` (much like eyebrows, these functions are sisters, not twins).
+
+`facet_grid` creates a matrix of panels, and is really useful when the x and y variables (and the axes scales) are the same for all the facets.
+
+`facet_wrap` is effectively an easy way to create many independent plots that are arranged neatly together, so the axes scales can be different in each facet. 
+
+In practice, you can often use either function to achieve what you want, but there are some key differences in what they can do. 
+
+For example, when using `facet_wrap`, the facets must all be the same size. If the facets have different scales (`scales = "free"`) then the proportions will therefore be different between the facets. For example, plotting a bar chart with different number of categories on each facet will result in different bar widths. Personally, this is offensive to my eyes. 
+
+Don't worry! We can solve this by using `facet_grid`, which has an argument `space = "free"`, allowing the facets to take up a different amount of space. 
+My difficulty was that I wanted different scales (`scales = "free"`, only possible using `facet_wrap`)
+
+The x-axis variables differed between facets, so I needed the x-axis scales to be different. This is possible in `facet_wrap`, but not in `facet_grid`. 

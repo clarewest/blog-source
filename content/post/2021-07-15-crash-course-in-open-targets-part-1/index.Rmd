@@ -9,7 +9,7 @@ categories:
 tags:
   - bioinformatics
   - genetics
-meta_img: images/query_screenshot.png
+meta_img: images/Summer-School-in-Open-Targets-Part-1-Blog-Header-Image.jpeg
 cardtype: summary_large_image
 description: Overview of using Open Targets to identify potential drug targets.
 ---
@@ -27,6 +27,8 @@ style <- function(df){
 Open Targets is a public-private partnership for systematic identification, prioritisation, and validation of drug targets. In this three-part blog post series, I will give an overview of Open Targets, the data available, and how to access it through the web interface, programmatically through the APIs, and using the data downloads. 
 
 <!--more-->
+
+Open Targets is a public-private partnership for systematic identification, prioritisation, and validation of drug targets. In this three-part blog post series, I will give an overview of Open Targets, the data available, and how to access it through the web interface, programmatically through the APIs, and using the data downloads. 
 
 As a postdoc at the [Centre for Medicines Discovery](https://www.cmd.ox.ac.uk/) (University of Oxford) and [UK SPINE](https://www.kespine.org.uk/), I was working with Open Targets to identify potential drug development opportunities for age-related multimorbidities. We were interested in finding genes associated with a number of age-related diseases, dissecting the genetic evidence for those relationships, and assessing the novelty and tractability of these targets as potential drug targets. Luckily for me, the team at Open Targets have already spent several years thinking about exactly these problems. In these blog posts, I will try to distil everything I learnt during these months of privileged insider access to the Open Targets slack channels about how to use their platform and how to scale up as my queries got more and more demanding. 
 
@@ -83,7 +85,7 @@ For example, you can say: I want all the targets that are co-mentioned in the li
 The Platform and Genetics Portal have separate APIs. The interactive GraphQL browsers, which include autocomplete and documentation, are useful for exploring the data, getting to know the schemas, and testing out queries:
 
 * **Platform Browser**: https://api.platform.opentargets.org/api/v4/graphql/browser
-* **Genetics Portal Browser**: http://genetics-api.opentargets.io/graphql/browser  
+* **Genetics Portal Browser**: https://api.genetics.opentargets.org/graphql/browser  
 
 I recommend reading [this previous blog post](http://blog.opentargets.org/2020/08/06/accessing-the-open-targets-genetics-using-graphql/) for a detailed overview of how to construct GraphQL queries and use the GraphQL browser. 
 

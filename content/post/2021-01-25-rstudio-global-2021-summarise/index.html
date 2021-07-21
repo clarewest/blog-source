@@ -18,7 +18,7 @@ meta_img: images/hex_wall.png
 
 
 
-<p>rstudio’s annual conference went online and global this year, which meant that I could attend for the first time. There were lots of interesting talks, and it was great to see familiar faces from GitHub/Twitter avatars come to life! This is a summary of the notes I took during the talks I attended, I will add links to the full talks on the rstudio website when they become available.</p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/">rstudio’s annual conference</a> went online and global this year, which meant that I could attend for the first time. There were lots of interesting talks, and it was great to see familiar faces from GitHub/Twitter avatars come to life! This is a summary of the notes I took during the talks I attended, including <a href="https://rstudio.com/resources/rstudioglobal-2021/" title="Full talks"><i class="fa fa-video-camera"></i></a> links to watch the full talk where available; to see all the available talk videos visit the <a href="https://rstudio.com/resources/rstudioglobal-2021/">rstudio website</a>.</p>
 <style type="text/css">
 h2, .h2, h3, .h3 {
     margin-top: 30px;
@@ -107,7 +107,7 @@ Tired of working in shiny and rerunning the app every time you do a change? Chec
 </div>
 <div id="maintaining-the-tidyverse" class="section level3">
 <h3>Maintaining the house the tidyverse built, <em>Hadley Wickham</em></h3>
-<p><em>The tidyverse life cycle and how to not have your code broken by updates</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/maintaining-the-house-the-tidyverse-built/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>The tidyverse life cycle and how to not have your code broken by updates</em></p>
 <p>Tidyverse updates bring improvements, new features and bug fixes, but sometimes they can introduce problems with existing R code. Hadley Wickham gave an overview of the Tidyverse life cycle, which tries to mitigate these problems. These are labels that indicate the stages of development, and can apply to functions, packages, arguments, and specific values of arguments.</p>
 <ul>
 <li><strong>Experimental</strong> - code that will change based on feedback</li>
@@ -153,7 +153,7 @@ Maintain laser focus on one thing at a time, because the cost of context-switchi
 </div>
 <div id="ggplot-misunderstandings" class="section level3">
 <h3>Always look on the bright side of plots, <em>Kara Woo</em></h3>
-<p><em>Common misunderstandings/errors with ggplot</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/always-look-on-the-bright-side-of-plots/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>Common misunderstandings/errors with ggplot</em></p>
 <p>Scale transformation happens before statistical summaries. When using <code>scale_x_continuous(limits = c(min, max))</code> the points outside the limits are converted to <code>NA</code> before the statistical summaries are calculated. Instead, use <code>coord_cartesian(xlim =c(min, max))</code> to zoom in on the plot, and the points outside will still be included in the statistical summaries.
 <img src=""></p>
 <div class="figure">
@@ -165,13 +165,13 @@ Plotting statistical summaries using <code>scale_x_continuous()</code> (left) an
 </div>
 <div id="trial-and-error-dataviz-at-ACLU" class="section level3">
 <h3>Trial and error in data viz at the ACLU, <em>Sophie Beiers</em></h3>
-<p><em>Sophie Beiers, a data journalist at the ACLU, described how the process of data analysis to visualisation is not linear or simple</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/trial-and-error-in-data-viz-at-the-aclu/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>Sophie Beiers, a data journalist at the ACLU, described how the process of data analysis to visualisation is not linear or simple</em></p>
 <p>As a case study, she talked us through one of her visualisation projects from 2020, visualising the data that showed there was no relationship between the reduction in jail populations in response to the COVID-19 pandemic, and the amount of crime in the jail’s surrounding area.</p>
 <p>The first step is gathering and exploring the data. Sophie uses <code>tidyverse</code>, <code>janitor</code> (for tables) and <code>ggplot2</code> for exploration. Next, what are the main points you want to visualise, and does your visualisation highlight your main points? Consider the audience - do they know about the topic already? When getting feedback, be specific about the main points and ask whether these points are coming through. Feedback from different audiences may conflict - it’s important to get feedback from the intended audience of the visualisation. While feedback can be hard to receive, it’s our job to make sure people can understand our plots. If it’s not working, it’s important to ask why - it might be surprising.</p>
 </div>
 <div id="sql-and-r" class="section level3">
 <h3>SQL &amp; R: The dynamic duo, <em>Irene Steves</em></h3>
-<p><em>Irene Steves shared a useful summary of the equivalent tidyverse functions and SQL commands</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/the-dynamic-duo-sql-and-r/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>Irene Steves shared a useful summary of the equivalent tidyverse functions and SQL commands</em></p>
 <p>How to decide which IDE to use? RStudio is useful for R formatting, suggestions, highlighting, visualisations and reporting, project organisation and version control. A dedicated SQL IDE provides auto-formatting and syntax highlighting for SQL, code/field suggestions, and makes it easy to stop bad queries.</p>
 <div class="figure">
 <p><img src="images/SQL_tidyverse.png" /></p>
@@ -182,7 +182,7 @@ tidyverse functions vs SQL commands cheatsheet
 </div>
 <div id="visualising-the-pandemic" class="section level3">
 <h3>Reporting on and visualising the pandemic, <em>John Burn-Murdoch</em></h3>
-<p><em>John shared the lessons he has learnt from a year of covering the pandemic</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/reporting-on-and-visualising-the-pandemic/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>John shared the lessons he has learnt from a year of covering the pandemic</em></p>
 <p>I was really excited about John Burn-Murdoch’s keynote, as I’ve been following his team’s visual coverage of the pandemic in the Financial Times (as has the rest of the world). If you haven’t already, I really recommend taking a look at their visual piece <a href="https://ig.ft.com/coronavirus-global-data/">“Covid-19: The global crisis - in data”</a>.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Text is your secret weapon.</strong> Annotations are extremely valuable to guide the audience to the message of the chart. People don’t study every data point on visualisations – especially ‘non-chart people’ – they will take away the title and the key message.</li>
@@ -212,12 +212,13 @@ NEW: a common response to reports of hospitals struggling this winter is “it�
 </div>
 <div id="whats-new-in-tidymodels" class="section level3">
 <h3>What’s new in tidymodels, <em>Max Kuhn</em></h3>
-<p><em>New methods for parameter optimisation</em></p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/whats-new-in-tidymodels/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>New methods for parameter optimisation</em></p>
 <p>There have been new updates to <a href="https://www.tidymodels.org/"><code>tidymodels</code></a> over the past six months, including two new ways of finding optimal values for parameters that cannot be directly calculated from the data. Using the <code>finetune</code> package, the parameters can be optimised using a racing approach (which uses interim analyses to eliminate candidate parameters that have a low probability of being the best) or simulated annealing (a biased random walk around the tuning parameter space, in which steps that worsen the model results are accepted with a probability that decreases as the search continues).</p>
 </div>
 <div id="making-shiny-apps-faster-with-caching" class="section level3">
 <h3>Making Shiny apps faster with caching, <em>Winston Chang</em></h3>
-<p>Shiny 1.6.0 has a new function, <a href="https://rdrr.io/github/rstudio/shiny/man/bindCache.html"><code>bindCache()</code></a>, that makes it easy to dramatically speed up reactive expressions and output rendering functions. It allows many applications to scale up to serve several times more users without an increase in server resources.</p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/making-shiny-apps-faster-with-caching/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>Use bindCache() to speed up your apps</em>
+Shiny 1.6.0 has a new function, <a href="https://rdrr.io/github/rstudio/shiny/man/bindCache.html"><code>bindCache()</code></a>, that makes it easy to dramatically speed up reactive expressions and output rendering functions. It allows many applications to scale up to serve several times more users without an increase in server resources.</p>
 <div class="figure">
 <p><img src="images/caching.png" /></p>
 <p class="caption">
@@ -227,9 +228,11 @@ A slide from Winston Chang’s presentation, with details about caching
 </div>
 <div id="disk-frame" class="section level3">
 <h3>Easy larger-than-RAM data manipulation with disk.frame, <em>ZJ</em></h3>
-<p>The <a href="https://github.com/xiaodaigh/disk.frame"><code>disk.frame</code></a> package provides a framework for manipulating datatables that are larger than RAM and can’t be held in memory at once. Instead of reading the entire large dataset into memory, <code>disk.frame</code> breaks it into smaller ‘chunks’ stored as <a href="https://fstpackage.org"><code>fst</code></a> files. Manipulations can then be performed on each individual chunk in parallel, and <code>disk.frame</code> supports most <code>dplyr</code> verbs.</p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/easy-larger-than-ram-data-manipulation-with-diskframe/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>disk.frame chunks large datasets into manageable fst files</em>
+The <a href="https://github.com/xiaodaigh/disk.frame"><code>disk.frame</code></a> package provides a framework for manipulating datatables that are larger than RAM and can’t be held in memory at once. Instead of reading the entire large dataset into memory, <code>disk.frame</code> breaks it into smaller ‘chunks’ stored as <a href="https://fstpackage.org"><code>fst</code></a> files. Manipulations can then be performed on each individual chunk in parallel, and <code>disk.frame</code> supports most <code>dplyr</code> verbs.</p>
 </div>
 <div id="your-public-garden" class="section level3">
 <h3>Your public garden, <em>Vicki Boykis</em></h3>
-<p><a href="https://twitter.com/vboykis">Vicki Boykis</a> is a machine learning engineer at Automattic, author of the newsletter <a href="https://vicki.substack.com/">Normcore Tech</a>, and one of the most valuable tweeters on my timeline. In her keynote, Vicki shared her experience on the importance of cultivating your own digital space online. I didn’t make any notes for this talk (too busy internalising!) but <a href="https://docs.google.com/presentation/d/1RZqE43Y3fWEExGwL3jAZD7uQPDUnt53UZj0GgWo6RtQ/edit#slide=id.g6fe1a5a715_4_4744">her slides and notes are available here</a>, and I really recommend listening to the full talk.</p>
+<p><a href="https://rstudio.com/resources/rstudioglobal-2021/your-public-garden/" title="Full talk"><i class="fa fa-video-camera"></i></a> <em>Why you should cultivate your own online space</em>
+<a href="https://twitter.com/vboykis">Vicki Boykis</a> is a machine learning engineer at Automattic, author of the newsletter <a href="https://vicki.substack.com/">Normcore Tech</a>, and one of the most valuable tweeters on my timeline. In her keynote, Vicki shared her experience on the importance of cultivating your own digital space online. I didn’t make any notes for this talk (too busy internalising!) but <a href="https://docs.google.com/presentation/d/1RZqE43Y3fWEExGwL3jAZD7uQPDUnt53UZj0GgWo6RtQ/edit#slide=id.g6fe1a5a715_4_4744">her slides and notes are available here</a>, and I really recommend listening to the full talk.</p>
 </div>
