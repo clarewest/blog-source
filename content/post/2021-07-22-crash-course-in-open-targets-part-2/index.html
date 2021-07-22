@@ -2,15 +2,15 @@
 title: 'Crash Course in Open Targets Part 2: Genetics Deep Dive'
 author: CE West
 date: '2021-07-22'
-slug: crash-course-in-open-targets-part-2
+slug: crash-course-in-open-targets-part-two
 categories:
   - science
   - R
 tags:
   - bioinformatics
   - genetics
-meta_img: images/image.png
-cardtype: summary
+meta_img: images/Summer-School-in-Open-Targets-Part-1-Blog-Header-Image.jpeg
+cardtype: summary_large_image
 description: A deeper look at exploring genetic evidence in Open Targets Genetics Portal
 ---
 
@@ -306,15 +306,18 @@ variants_qtl &lt;-
   tidyr::unnest(qtl) %&gt;%
   select(-qtl) %&gt;%
   flatten()</code></pre>
-<pre><code>## # A tibble: 5 x 10
-##   studyId    variantId  qtlStudyName phenotypeId  beta    h4 gene.id gene.symbol
-##   &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      
-## 1 FINNGEN_R… 4_1557623… GTEX_v7      ENSG000001… 0.155 0.763 ENSG00… GUCY1A1    
-## 2 FINNGEN_R… 4_1557623… GTEX_v7      ENSG000002… 0.117 0.484 ENSG00… AC104083.1 
-## 3 FINNGEN_R… 4_1557623… GTEX_v7      ENSG000002… 0.181 0.910 ENSG00… AC104083.1 
-## 4 FINNGEN_R… 4_1557623… GTEX_v7      ENSG000001… 0.155 0.794 ENSG00… GUCY1A1    
-## 5 FINNGEN_R… 4_1557623… GTEX_v7      ENSG000002… 0.117 0.457 ENSG00… AC104083.1 
-## # … with 2 more variables: tissue.name &lt;chr&gt;, indexVariant.id &lt;chr&gt;</code></pre>
+<pre><code>##                         studyId        variantId qtlStudyName     phenotypeId
+## 1 FINNGEN_R5_I9_CORATHER_EXNONE 4_155762333_AT_A      GTEX_v7 ENSG00000164116
+## 2 FINNGEN_R5_I9_CORATHER_EXNONE 4_155762333_AT_A      GTEX_v7 ENSG00000260244
+## 3 FINNGEN_R5_I9_CORATHER_EXNONE 4_155762333_AT_A      GTEX_v7 ENSG00000260244
+## 4        FINNGEN_R5_I9_CORATHER 4_155762333_AT_A      GTEX_v7 ENSG00000164116
+## 5        FINNGEN_R5_I9_CORATHER 4_155762333_AT_A      GTEX_v7 ENSG00000260244
+##       beta        h4         gene.id gene.symbol   tissue.name indexVariant.id
+## 1 0.154862 0.7625397 ENSG00000164116     GUCY1A1 Artery tibial 4_155694252_C_T
+## 2 0.116993 0.4844574 ENSG00000260244  AC104083.1 Artery tibial 4_155694252_C_T
+## 3 0.181015 0.9095855 ENSG00000260244  AC104083.1          Lung 4_155724361_C_A
+## 4 0.154862 0.7935801 ENSG00000164116     GUCY1A1 Artery tibial 4_155694252_C_T
+## 5 0.116993 0.4565324 ENSG00000260244  AC104083.1 Artery tibial 4_155694252_C_T</code></pre>
 </div>
 <div id="wow-what-else-is-there" class="section level4">
 <h4>Wow, what else is there?</h4>

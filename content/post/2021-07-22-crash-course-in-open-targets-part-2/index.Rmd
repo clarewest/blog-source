@@ -2,15 +2,15 @@
 title: 'Crash Course in Open Targets Part 2: Genetics Deep Dive'
 author: CE West
 date: '2021-07-22'
-slug: crash-course-in-open-targets-part-2
+slug: crash-course-in-open-targets-part-two
 categories:
   - science
   - R
 tags:
   - bioinformatics
   - genetics
-meta_img: images/image.png
-cardtype: summary
+meta_img: images/Summer-School-in-Open-Targets-Part-1-Blog-Header-Image.jpeg
+cardtype: summary_large_image
 description: A deeper look at exploring genetic evidence in Open Targets Genetics Portal
 ---
 

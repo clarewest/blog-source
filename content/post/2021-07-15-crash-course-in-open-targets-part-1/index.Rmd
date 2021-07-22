@@ -1,5 +1,5 @@
 ---
-title: "Crash course in Open Targets Part 1: Browsing and Querying Target-Disease Associations"
+title: "Crash Course in Open Targets Part 1: Browsing and Querying Target-Disease Associations"
 author: CE West
 date: '2021-07-15'
 slug: crash-course-in-open-targets-part-1
