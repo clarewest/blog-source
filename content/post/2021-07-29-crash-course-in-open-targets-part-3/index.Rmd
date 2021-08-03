@@ -1,7 +1,7 @@
 ---
 title: 'Crash Course in Open Targets Part 3: Taming the Data Downloads'
 author: CE West
-date: '2021-07-29'
+date: '2021-08-03'
 slug: crash-course-in-open-targets-part-3
 categories:
   - science
@@ -10,16 +10,15 @@ tags:
   - bioinformatics
   - genetics
 meta_img: images/image.png
-cardtype: summary
-description: An overview of accessing Open Targets data through the data downloads
-draft: true
+cardtype: summary_large_image
+description: An overview of accessing Open Targets data through the data downloads using PySpark
 ---
 
 Now we've covered [the basics of Open Targets](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-1/) and [dug deeper into the evidence](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-2/) that makes up the data, this final part of the crash course covers how to harness it at a bigger scale through the data downloads.
 
 <!--more-->
 
-Now we've covered [the basics of Open Targets](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-1/) and [dug deeper into the evidence](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-2/) that makes up the data, this final part of the crash course covers how to harness it at a bigger scale through the data downloads.
+Now we've covered [the basics of Open Targets](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-1/) and [dug deeper into the evidence](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-two/) that makes up the data, this final part of the crash course covers how to harness it at a bigger scale through the data downloads.
 
 For one whole year I happily hammered away at the APIs, but my queries kept getting bigger and more complex and eventually I wanted to use just about every piece of data that Open Targets provides. The Open Targets team finally told me (to paraphrase): "Clare, it's time to grow up, the APIs aren't designed for what you're doing, use the data downloads instead". 
 
@@ -27,9 +26,11 @@ At first I was hesitant about handling big confusing files on my little laptop, 
 
 ## Data Downloads
 
-I really recommend using using the [data downloads](https://platform.opentargets.org/downloads) for Open Targets Platform if you are querying more than a few targets or diseases, especially if you are interested in lots of the annotations. While the Platform is extremely comprehensive, the data itself is not terribly big (<6GB) and you can easily download the whole thing. 
+I really recommend using using the [data downloads](https://platform.opentargets.org/downloads) for Open Targets Platform if you are querying more than a few targets or diseases, especially if you are interested in lots of the annotations. While the Platform is extremely comprehensive, the data itself is not terribly big (<6GB) - you can easily download the whole thing, or selectively download just the data of interest. 
 
 The downloads are available [via FTP](http://ftp.ebi.ac.uk/pub/databases/opentargets/platform/) in JSON and parquet format, and you can find download instructions and usage examples in Python and R [here](https://platform-docs.opentargets.org/data-access/datasets). For more examples of how to use the data, check out [Open Targets Community](https://community.opentargets.org/).
+
+![File structure of Open Targets Platform v21.06.](images/OT_data.png)
 
 For the Genetics Portal, the data is [available to download](https://genetics-docs.opentargets.org/technical-pipeline/data-download) in JSON format [via FTP](https://ftp.ebi.ac.uk/pub/databases/opentargets/genetics/). It's a lot bigger than the Platform - there are a few million variants after all - but you can always download specific parts of the data that you're interested in processing yourself, and supplement it with API calls. For example, locally I have the directories:
 
@@ -37,7 +38,9 @@ For the Genetics Portal, the data is [available to download](https://genetics-do
 - `v2d`: [variant-to-disease](https://genetics-docs.opentargets.org/our-approach/assigning-traits-to-loci) information i.e. GWAS study, variant, effect size, p-value, the trait for the study and the EFO disease codes it was mapped to, etc
 - `v2d_coloc`:  results of the [colocalisation analysis](https://genetics-docs.opentargets.org/our-approach/colocalisation-analysis) performed between GWAS and eQTL/pQTL studies, as well as between pairs of GWAS studies with overlapping hits
 
-(that's 56GB of my laptop dedicated to the Genetics Portal, but I am a superfan).
+(that's 60GB of my laptop dedicated to the Genetics Portal, but I am a superfan).
+
+![File structure of Open Targets Genetics Portal v210608](images/OTG_data.png)
 
 ## Fast data access and querying using Spark
 
@@ -60,25 +63,25 @@ spark = SparkSession.builder \
            .getOrCreate()
 
 ## Data paths
-ot_platform = "path/to/platform/files/21.02/"
-ot_genetics = "path/to/portal/files/20022712/"
+ot_platform = "path/to/platform/data/21.06/"
+ot_genetics = "path/to/genetics/data/210608/"
 
 ## Read Open Targets platform data 
-diseases = (spark.read.parquet(ot_platform+"ETL_parquet/diseases/", header=True)
+diseases = (spark.read.parquet(ot_platform+"diseases/", header=True)
             .withColumnRenamed("id","diseaseId")
             .withColumnRenamed("name","diseaseName")
             )
-targets = (spark.read.parquet(ot_platform+"ETL_parquet/targets/")
+targets = (spark.read.parquet(ot_platform+"targets/")
            .withColumnRenamed("id","targetId")
            .withColumnRenamed("approvedSymbol", "targetSymbol")
            .withColumnRenamed("approvedName","targetName")
            )
-evidences = spark.read.parquet(ot_platform+"ETL_parquet/evidences/succeeded")
-knowndrugs = spark.read.parquet(ot_platform+"ETL_parquet/knownDrugs")
-overall_associations = spark.read.parquet(ot_platform+"ETL_parquet/associations/indirect/byOverall/")
+evidence = spark.read.parquet(ot_platform+"evidence")
+knowndrugs = spark.read.parquet(ot_platform+"knownDrugsAggregated")
+overall_associations = spark.read.parquet(ot_platform+"associationByOverallIndirect")
 
 ## Read Open Targets Genetics Portal data
-studies = spark.read.json(ot_genetics+"lut/study-index/")
+studies = spark.read.json(ot_genetics+"lut/study-index")
 v2d = spark.read.json(ot_genetics+"v2d/")
 coloc = spark.read.json(ot_genetics+"v2d_coloc/")
 
@@ -116,13 +119,6 @@ root
  |    |-- element: string (containsNull = true)
  |-- drugType: string (nullable = true)
  |-- mechanismOfAction: string (nullable = true)
- |-- references: array (nullable = true)
- |    |-- element: struct (containsNull = true)
- |    |    |-- source: string (nullable = true)
- |    |    |-- ids: array (nullable = true)
- |    |    |    |-- element: string (containsNull = true)
- |    |    |-- urls: array (nullable = true)
- |    |    |    |-- element: string (containsNull = true)
  |-- targetName: string (nullable = true)
 ```
 
@@ -140,15 +136,11 @@ gen_associations = associations.filter(col("datatypeId")=="genetic_association")
 
 gen_associations.printSchema()
 root
- |-- targetId: string (nullable = true)
  |-- diseaseId: string (nullable = true)
+ |-- targetId: string (nullable = true)
  |-- datatypeId: string (nullable = true)
- |-- datatypeHarmonicScore: double (nullable = true)
- |-- datatypeEvidenceCount: long (nullable = true)
- |-- diseaseLabel: string (nullable = true)
- |-- targetName: string (nullable = true)
- |-- targetSymbol: string (nullable = true)
-
+ |-- score: double (nullable = true)
+ |-- evidenceCount: long (nullable = true)
 
 ```
 
@@ -209,71 +201,188 @@ root
 
 ```
 
-To get the targets genetically associated with my diseases of interest, I join this with the `gen_associations` table, again on the `diseaseName` column. This will add all the columns from the genetic associations dataframe for the associations that involve my diseases of interest. 
+The `gen_associations` dataframe contains the genetic association scores between all targets and diseases for which there is genetic evidence from the Genetics Portal. The score is a summary of the evidence for each disease-target pair, for example the top 5 rows below include an association between `EFO_0000274` (atopic eczema) and `ENSG00000026036` with a genetic association score of 0.48 based on 7 individual pieces of genetic evidence. As we're only looking at evidence from the Genetics Portal, each piece of evidence is a locus from a GWAS study for atopic eczema that has been mapped to the gene `ENSG00000026036`. 
+
+```{python, eval = FALSE}
+gen_associations.show(5)
++-----------+---------------+-------------------+--------------------+-------------+
+|  diseaseId|       targetId|         datatypeId|               score|evidenceCount|
++-----------+---------------+-------------------+--------------------+-------------+
+|EFO_0000274|ENSG00000006607|genetic_association|1.765630888755720...|            1|
+|EFO_0000274|ENSG00000009335|genetic_association| 0.04421722401086534|            1|
+|EFO_0000274|ENSG00000009413|genetic_association| 1.80311116677208E-4|            1|
+|EFO_0000274|ENSG00000019186|genetic_association|  0.4546365180782371|            1|
+|EFO_0000274|ENSG00000026036|genetic_association|  0.4832869240076596|            7|
++-----------+---------------+-------------------+--------------------+-------------+
+only showing top 5 rows
+```
+
+To get the targets genetically associated with my diseases of interest, I join my `my_diseases` dataframe with the `gen_associations` table on the `diseaseId` column. This will add all the columns from the genetic associations dataframe for the associations that involve my diseases of interest. 
+
+
+```{python, eval = FALSE}
+
+## Genetic associations for my diseases of interest
+my_diseases_associations = my_diseases_details.join(gen_associations,"diseaseId", "inner")
+
+my_diseases_associations.printSchema()
+root
+ |-- diseaseId: string (nullable = true)
+ |-- myDiseaseId: string (nullable = true)
+ |-- diseaseName: string (nullable = true)
+ |-- description: string (nullable = true)
+ |-- therapeuticAreas: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- synonyms: struct (nullable = true)
+ |    |-- hasBroadSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasExactSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasNarrowSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |    |-- hasRelatedSynonym: array (nullable = true)
+ |    |    |-- element: string (containsNull = true)
+ |-- targetId: string (nullable = true)
+ |-- datatypeId: string (nullable = true)
+ |-- score: double (nullable = true)
+ |-- evidenceCount: long (nullable = true)
+```
 
 I can see how many targets are genetically associated with each disease by using `groupBy("diseaseName")` to group the rows by disease `count()` to count the number of rows in each group:
 
 ```{python, eval = FALSE}
-my_diseases_associations = my_diseases_details.join(gen_associations,"diseaseId", "inner")
-
+## Number of targets genetically associated with my diseases of interest
 my_diseases_associations.groupBy("diseaseName").count().show()
 +-------------------+-----+
 |        diseaseName|count|
 +-------------------+-----+
-|Parkinson's disease|  327|
-|Alzheimer's disease|  432|
+|Parkinson's disease|  489|
+|Alzheimer's disease|  492|
 +-------------------+-----+
 ```
 
-I can get the target annotations for those targets by joining with the `targets` dataframe on the `targetId`, `targetSymbol` and `targetName` columns, which are common to both dataframes. 
+I can get the target annotations for those targets by joining with the `targets` dataframe on the `targetId` column, which is common to both dataframes. 
 
 ```{python, eval = FALSE}
-my_targets = my_diseases_associations.join(targets, ["targetId", "targetSymbol", "targetName"])
+## Target annotations for targets associated with my diseases
+my_targets = my_diseases_associations.join(targets, ["targetId"])
 ```
 
 I then have all the Open Targets annotations to explore for these targets. I won't show them all (because there are so many!) but to demonstrate, here's how you can access information on the [tractability category](https://docs.targetvalidation.org/getting-started/target-tractability) and the functions of the targets:
 
 ```{python, eval = FALSE}
-
-my_targets_details = (my_targets
-                      .orderBy(col("datatypeHarmonicScore"), 
+## Tractability annotations targets associated with my diseases
+my_targets_tractability_details = (my_targets
+                      .orderBy(col("score"), 
                                ascending = False)
                       .select("targetSymbol", "tractability.smallmolecule.top_category", 
                               explode("proteinAnnotations.functions"))
                       )
 
-my_targets_details.show(5, truncate = 40)
+my_targets_tractability_details.show(5, truncate = 40)
 +------------+---------------------------------------+----------------------------------------+
 |targetSymbol|tractability.smallmolecule.top_category|                                     col|
 +------------+---------------------------------------+----------------------------------------+
-|       PSEN1|                 Clinical_Precedence_sm|Catalytic subunit of the gamma-secret...|
-|        PRKN|                Discovery_Precedence_sm|Functions within a multiprotein E3 ub...|
-|       PINK1|                 Predicted_Tractable_sm|Protects against mitochondrial dysfun...|
-|     ATP13A2|                                   null|ATPase which acts as a lysosomal poly...|
 |       LRRK2|                Discovery_Precedence_sm|Serine/threonine-protein kinase which...|
+|       PSEN1|                 Clinical_Precedence_sm|Catalytic subunit of the gamma-secret...|
+|     ATP13A2|                                   null|ATPase which acts as a lysosomal poly...|
+|       PINK1|                Discovery_Precedence_sm|Serine/threonine-protein kinase which...|
+|        PRKN|                Discovery_Precedence_sm|Functions within a multiprotein E3 ub...|
 +------------+---------------------------------------+----------------------------------------+
+only showing top 5 rows
 
 ```
 
+Other target annotations include: synonyms, genomic location, UniProt protein annotations (subunits, subcellular location, etc), GO terms, Reactome pathways, cancer hallmarks, chemical probes and TEP availability, and safety information (adverse effects, experimental toxicity, etc). 
 
-Finally, let's bring in some Genetics Portal data. 
+Finally, let's look more closely at the evidence underlying these summarised target-disease associations and bring in some Genetics Portal data. 
 
-In the following example, I get GWAS evidence that links targets to my diseases of interest, where the locus-to-gene score is greater than 0.5. Then I use the `studyId` field to join it with the `studies` dataframe, which contains information on the GWAS studies from the Genetics Portal. 
+In the following example, I join the associations dataframe with the evidence dataframe to get the individual GWAS evidence linking the targets to my diseases of interest, and filter out evidence with a locus-to-gene score below 0.5 to remove lower confidence evidence. Note that both dataframes have a column called `score` -- for `my_diseases_associations` this is the overall genetic association score, and for the `otg_evidences` dataframe, this is the locus-to-gene score of each piece of genetics evidence. I have to rename one of them before I join to avoid confusion. 
 
 ```{python, eval = FALSE}
+## Genetic evidence for targets associated with my diseases
 my_diseases_evidence  = (my_diseases_associations
                     # join on the target and disease fields common to the association and evidence dataframes
-                    .join(otg_evidences, ["diseaseId", "targetId", "targetName", "targetSymbol"], "inner")
-                    .select("targetId", "targetSymbol", "diseaseId", "diseaseName", "studyId", "variantId", "score")
-                    .filter(col("score")>0.5)
-                    )
+                    .join(otg_evidence
+                          .withColumnRenamed("id","evidenceId")
+                          .withColumnRenamed("score","evidenceScore"), 
+                          ["diseaseId", "targetId"], "inner")
+                    .filter(col("evidenceScore")>0.5)
+                    
+```
 
+I can then look at details of the evidence, for example the effect size, study year and sample size. For example, here we can see that the hit with the largest effect size for Alzheimer's disease is linked to `ENSG00000130203` (APOE):  
+```{python, eval = FALSE}
+## Show details of GWAS study hits
+my_diseases_evidence.orderBy(col("oddsRatio"), ascending = False).select("diseaseId","diseaseName", "targetId", "oddsRatio", "publicationYear", "studySampleSize", "evidenceScore").show(5)
++-----------+-------------------+---------------+------------------+---------------+---------------+------------------+
+|  diseaseId|        diseaseName|       targetId|         oddsRatio|publicationYear|studySampleSize|     evidenceScore|
++-----------+-------------------+---------------+------------------+---------------+---------------+------------------+
+|EFO_0000249|Alzheimer's disease|ENSG00000130203|6.6858944422792685|           2018|         402787|0.6864025592803955|
+|EFO_0000249|Alzheimer's disease|ENSG00000130203| 5.819416505905281|           2021|         111630|0.6864025592803955|
+|EFO_0000249|Alzheimer's disease|ENSG00000130203| 5.482164474085857|           2021|         215052|0.6864025592803955|
+|EFO_0000249|Alzheimer's disease|ENSG00000175497| 5.451484379762762|           2018|           2935|0.7751756310462952|
+|EFO_0000249|Alzheimer's disease|ENSG00000130203|  5.34093109429337|           2021|         112058|0.6864025592803955|
++-----------+-------------------+---------------+------------------+---------------+---------------+------------------+
+only showing top 5 rows
+
+```
+
+I can get more detailed genetics information from the Genetics Portal by joining with the Portal data downloads that I read in earlier. For example, if I join with the `studies` dataframe on the `studyId` field, I can get even more information on the GWAS studies contributing to the target-disease evidence:
+
+```{python, eval = FALSE}
+## Genetic evidence for targets associated with my diseases
 my_diseases_studies = (my_diseases_evidence
+                       .select(["diseaseId", "targetId", "myDiseaseId", "diseaseName", "studyId", "evidenceScore" ])
                         .join(studies
                               .withColumnRenamed("study_id", "studyId"),
                               "studyId")
                         )
 
+my_diseases_studies.printSchema()
+root
+ |-- studyId: string (nullable = true)
+ |-- diseaseId: string (nullable = true)
+ |-- targetId: string (nullable = true)
+ |-- myDiseaseId: string (nullable = true)
+ |-- diseaseName: string (nullable = true)
+ |-- evidenceScore: double (nullable = true)
+ |-- ancestry_initial: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- ancestry_replication: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- has_sumstats: boolean (nullable = true)
+ |-- n_cases: long (nullable = true)
+ |-- n_initial: long (nullable = true)
+ |-- n_replication: long (nullable = true)
+ |-- num_assoc_loci: long (nullable = true)
+ |-- pmid: string (nullable = true)
+ |-- pub_author: string (nullable = true)
+ |-- pub_date: string (nullable = true)
+ |-- pub_journal: string (nullable = true)
+ |-- pub_title: string (nullable = true)
+ |-- source: string (nullable = true)
+ |-- trait_category: string (nullable = true)
+ |-- trait_efos: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- trait_reported: string (nullable = true)
+
+```
+
+For example, I can look at the ancestry of the patients, the total number of associated loci identified in each study, and whether there are summary statistics available (and therefore whether more advanced methods can been used such as fine-mapping and colocalisation, see [Part 2: Genetics Deep Dive](https://clarewest.github.io/blog/post/crash-course-in-open-targets-part-two/)).
+
+```{python, eval = FALSE}
+my_diseases_studies.orderBy("evidenceScore", ascending = False).select("diseaseName","targetId", "evidenceScore", "ancestry_initial", "num_assoc_loci", "has_sumstats").show(5)
++-------------------+---------------+------------------+------------------+--------------+------------+
+|        diseaseName|       targetId|     evidenceScore|  ancestry_initial|num_assoc_loci|has_sumstats|
++-------------------+---------------+------------------+------------------+--------------+------------+
+|Parkinson's disease|ENSG00000080854|0.9047921895980835| [European=482730]|           110|       false|
+|Alzheimer's disease|ENSG00000164512|0.9032098054885864|    [European=303]|            14|       false|
+|Parkinson's disease|ENSG00000152214|0.9008632302284241|[East Asian=31575]|             8|       false|
+|Parkinson's disease|ENSG00000152214|0.8986399173736572| [European=417508]|            40|       false|
+|Parkinson's disease|ENSG00000152214|0.8986399173736572| [European=417508]|            31|       false|
++-------------------+---------------+------------------+------------------+--------------+------------+
+only showing top 5 rows
 
 ```
 
