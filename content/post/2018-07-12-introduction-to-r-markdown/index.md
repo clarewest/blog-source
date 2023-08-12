@@ -1,14 +1,14 @@
 ---
 title: "Introduction to R Markdown"
 author: CE West
-date: '2017-02-28'
-slug: protein-structure-classification
+date: '2018-07-12'
+slug: introduction-to-r-markdown
 categories:
   - personal
 tags:
   - r
   - coding
-  - bioinformatics
+  - rmarkdown
 meta_img: images/image.png
 description: Introduction to R markdown for readable, reproducible, and narrative-driven analyses
 ---
